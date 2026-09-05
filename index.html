@@ -4,73 +4,280 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gen AM Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #121212; --panel: #1e1e1e; --text: #fff; --primary: #00ff88; --danger: #ff4444; }
-        body { font-family: monospace; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: var(--panel); padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        h2 { text-align: center; color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px; }
-        input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: white; box-sizing: border-box; }
-        button { background: var(--primary); color: #000; font-weight: bold; cursor: pointer; border: none; }
-        button:hover { opacity: 0.8; }
-        button.secondary { background: #444; color: white; }
-        .hidden { display: none; }
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+        }
+
+        .container {
+            background: var(--surface);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden { display: none !important; }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .form-group { margin-bottom: 15px; }
         
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        input[type="text"], input[type="password"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-main);
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        button:active { transform: translateY(1px); }
+        button:disabled { background: var(--surface-hover); cursor: not-allowed; color: var(--text-muted); }
+        
+        button.secondary { background: var(--surface-hover); color: var(--text-main); }
+        button.secondary:hover { background: var(--border); }
+        
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
         /* Terminal UI */
-        .terminal { background: #000; color: #00ff00; padding: 10px; height: 150px; overflow-y: auto; font-size: 12px; border-radius: 5px; margin-bottom: 10px; }
-        .terminal-line { margin: 2px 0; }
+        .terminal-container {
+            background: #000;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
         
-        /* Result UI */
-        textarea { width: 100%; height: 100px; background: #000; color: #fff; border: 1px solid #333; padding: 10px; box-sizing: border-box; resize: none; margin-bottom: 10px; }
-        .btn-group { display: flex; gap: 10px; }
+        .terminal-header {
+            background: #1e1e1e;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #888;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.r { background: #ff5f56; }
+        .dot.y { background: #ffbd2e; }
+        .dot.g { background: #27c93f; }
+
+        .terminal {
+            font-family: 'JetBrains Mono', monospace;
+            color: #00ff00;
+            padding: 12px;
+            height: 180px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .terminal-line { margin: 2px 0; word-break: break-all; }
+        .terminal-line.error { color: var(--danger); }
+        .terminal-line.info { color: #00d2ff; }
+
+        /* Textarea Result */
+        textarea {
+            width: 100%;
+            height: 120px;
+            background: var(--bg);
+            color: var(--primary);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            resize: vertical;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+        }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         
         /* Admin Box */
-        .admin-box { margin-top: 20px; padding: 15px; border: 1px dashed var(--primary); border-radius: 5px; }
+        .admin-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .admin-title { margin-top: 0; font-size: 16px; color: #eab308; display: flex; align-items: center; gap: 8px;}
+
+        /* Alert */
+        .msg-box { text-align: center; margin-top: 15px; font-size: 14px; min-height: 20px; }
     </style>
 </head>
 <body>
 
+<!-- WIDGET LOGIN / REGISTER -->
 <div class="container" id="auth-box">
-    <h2>Gen AM Tools - Login / Daftar</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="auth('login')">Login</button>
+    <h2>GEN AM TOOLS</h2>
+    <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="Masukkan username">
+    </div>
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••">
+    </div>
+    <button onclick="auth('login')">Login to Dashboard</button>
     <button class="secondary" onclick="auth('register')">Daftar Akun Baru</button>
-    <div style="text-align:center; margin-top:10px;"><small id="auth-msg"></small></div>
+    <div class="msg-box" id="auth-msg"></div>
 </div>
 
+<!-- WIDGET DASHBOARD -->
 <div class="container hidden" id="dashboard-box">
-    <h2>Gen AM Tools <span id="role-badge" style="font-size:12px; color:#aaa;"></span></h2>
-    <button class="secondary" onclick="logout()" style="width: auto; float: right; padding: 5px 10px; margin-top: -50px;">Logout</button>
+    <div class="header-bar">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <h2 style="margin:0; border:none; padding:0;">DASHBOARD</h2>
+            <span class="badge" id="role-badge"></span>
+        </div>
+        <button class="secondary" onclick="logout()" style="width: auto; padding: 6px 12px; margin: 0; font-size: 13px;">Logout</button>
+    </div>
     
-    <div id="locked-view" class="hidden" style="text-align: center; padding: 20px 0;">
-        <p>Akses ditolak. Role Anda saat ini adalah <b>User</b>.</p>
-        <p>Silakan upgrade ke Premium untuk menggunakan tool ini.</p>
-        <button onclick="contactAdmin()" style="width:auto; padding: 10px 20px;">Hubungi Admin (WhatsApp)</button>
+    <!-- LOCKED VIEW (Untuk User Biasa) -->
+    <div id="locked-view" class="hidden" style="text-align: center; padding: 40px 20px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px dashed var(--danger);">
+        <svg style="width:50px; fill:var(--danger); margin-bottom:15px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-9a1 1 0 0 0-1-1h-1V5a6 6 0 1 0-12 0v2H7a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8zm-9-3a4 4 0 1 1 8 0v2H9V5z"/></svg>
+        <h3 style="margin-top:0;">Akses Premium Dibutuhkan</h3>
+        <p style="color:var(--text-muted); font-size: 14px; margin-bottom:20px;">Role Anda saat ini adalah <b>User</b>. Anda tidak dapat menggunakan tool Generator ini.</p>
+        <button onclick="contactAdmin()" style="width:auto; padding: 10px 24px; background: #25D366; color:#fff;">Upgrade via WhatsApp Admin</button>
     </div>
 
+    <!-- TOOL VIEW (Untuk Premium / Admin) -->
     <div id="tool-view" class="hidden">
-        <label>Jumlah Generate (Max 50):</label>
-        <input type="number" id="amount" min="1" max="50" value="1">
-        <button onclick="startGenerate()" id="btn-gen">Mulai Generate</button>
+        <div class="form-group">
+            <label>Jumlah Generate (Max 50)</label>
+            <input type="number" id="amount" min="1" max="50" value="1">
+        </div>
+        <button onclick="startGenerate()" id="btn-gen">⚡ Mulai Generate</button>
         
-        <h4>Terminal Log</h4>
-        <div class="terminal" id="terminal"></div>
+        <div style="margin-top: 25px;">
+            <label>Terminal Logs</label>
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+                    <span style="margin-left: 10px;">root@gen-am:~#</span>
+                </div>
+                <div class="terminal" id="terminal">
+                    <div class="terminal-line info">Waiting for command...</div>
+                </div>
+            </div>
+        </div>
         
-        <h4>Hasil</h4>
-        <textarea id="result-text" readonly placeholder="Akun akan muncul di sini..."></textarea>
-        <div class="btn-group">
-            <button onclick="copyResult()">Copy TXT</button>
-            <button onclick="downloadResult()">Download TXT</button>
+        <div>
+            <label>Hasil Generate (Format: Email|Password)</label>
+            <textarea id="result-text" readonly placeholder="Akun akan muncul di sini..."></textarea>
+            <div class="btn-group">
+                <button class="secondary" onclick="copyResult()">📋 Copy TXT</button>
+                <button class="secondary" onclick="downloadResult()">💾 Download TXT</button>
+            </div>
         </div>
     </div>
 
+    <!-- ADMIN PANEL -->
     <div id="admin-view" class="admin-box hidden">
-        <h3 style="color:var(--primary); margin-top:0;">Admin Control Panel</h3>
-        <input type="number" id="wa-number" placeholder="Nomor WA Admin (contoh: 62812...)">
-        <button onclick="adminAction('setWa')">Simpan Nomor WA</button>
-        <hr style="border-color:#333; margin:15px 0;">
-        <input type="text" id="target-user" placeholder="Username untuk diupgrade">
-        <button onclick="adminAction('upgrade')">Upgrade ke Premium</button>
+        <h3 class="admin-title">🛡️ Admin Control Panel</h3>
+        <div class="form-group">
+            <label>Nomor WA Admin (628...)</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="number" id="wa-number" placeholder="628xxx">
+                <button onclick="adminAction('setWa')" style="width:100px; margin-top:0;">Simpan</button>
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+            <label>Upgrade User ke Premium</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="target-user" placeholder="Username target">
+                <button onclick="adminAction('upgrade')" style="width:100px; margin-top:0;">Upgrade</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -79,7 +286,7 @@
     let currentRole = null;
     let waAdmin = "628123456789";
 
-    // Panggil init sekali saat load untuk auto-bikin database & akun man/admin
+    // Auto-init DB saat page load
     fetch('/api/db', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'init' }) });
 
     async function reqApi(action, data = {}) {
@@ -91,16 +298,24 @@
         return await res.json();
     }
 
+    function showMsg(text, isError = false) {
+        const el = document.getElementById('auth-msg');
+        el.innerText = text;
+        el.style.color = isError ? 'var(--danger)' : 'var(--primary)';
+    }
+
     async function auth(action) {
-        const u = document.getElementById('username').value;
-        const p = document.getElementById('password').value;
-        if (!u || !p) return alert('Isi username & password');
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value.trim();
+        if (!u || !p) return showMsg('Harap isi username dan password!', true);
         
+        showMsg('Memproses...');
         const res = await reqApi(action, { username: u, password: p });
+        
         if (res.error) {
-            document.getElementById('auth-msg').innerText = res.error;
-            document.getElementById('auth-msg').style.color = 'var(--danger)';
+            showMsg(res.error, true);
         } else {
+            showMsg('');
             currentUser = u;
             currentRole = res.role;
             loadDashboard();
@@ -110,12 +325,15 @@
     async function loadDashboard() {
         document.getElementById('auth-box').classList.add('hidden');
         document.getElementById('dashboard-box').classList.remove('hidden');
-        document.getElementById('role-badge').innerText = `[${currentRole.toUpperCase()}] - ${currentUser}`;
+        document.getElementById('role-badge').innerText = currentRole.toUpperCase();
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
         
-        // Ambil data WA terbaru
+        // Fetch WA Number terbaru
         const resWa = await reqApi('getWa');
         if(resWa.wa) waAdmin = resWa.wa;
 
+        // Atur Tampilan Berdasarkan Role
         if (currentRole === 'user') {
             document.getElementById('locked-view').classList.remove('hidden');
             document.getElementById('tool-view').classList.add('hidden');
@@ -124,9 +342,12 @@
             document.getElementById('tool-view').classList.remove('hidden');
         }
 
+        // Tampilkan panel admin khusus role admin
         if (currentRole === 'admin') {
             document.getElementById('admin-view').classList.remove('hidden');
             document.getElementById('wa-number').value = waAdmin;
+        } else {
+            document.getElementById('admin-view').classList.add('hidden');
         }
     }
 
@@ -134,85 +355,107 @@
         currentUser = null; currentRole = null;
         document.getElementById('auth-box').classList.remove('hidden');
         document.getElementById('dashboard-box').classList.add('hidden');
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-        document.getElementById('auth-msg').innerText = '';
+        showMsg('');
     }
 
     function contactAdmin() {
-        window.open(`https://wa.me/${waAdmin}?text=Halo%20Admin,%20saya%20ingin%20upgrade%20akun%20Gen%20AM%20Tools%20saya.%20Username:%20${currentUser}`, '_blank');
+        const text = encodeURIComponent(`Halo Admin, saya ingin upgrade akun Gen AM Tools.\nUsername: ${currentUser}`);
+        window.open(`https://wa.me/${waAdmin}?text=${text}`, '_blank');
     }
 
     async function adminAction(action) {
-        const payload = { action, currentUser }; // bypass strict auth demi simplisitas, dalam real env ini dicek di backend
+        const payload = { action, currentUser };
         if (action === 'setWa') payload.waNumber = document.getElementById('wa-number').value;
         if (action === 'upgrade') payload.targetUser = document.getElementById('target-user').value;
         
+        if(!payload.waNumber && !payload.targetUser) return alert('Isi data terlebih dahulu');
+
         const res = await reqApi(action, payload);
-        if(res.success) alert('Berhasil dieksekusi!');
-        else alert('Gagal: ' + res.error);
+        if(res.success) {
+            alert('Aksi berhasil dieksekusi!');
+            if(action === 'upgrade') document.getElementById('target-user').value = '';
+        } else {
+            alert('Gagal: ' + res.error);
+        }
     }
 
-    function logTerm(msg) {
+    function logTerm(msg, type = 'normal') {
         const term = document.getElementById('terminal');
-        term.innerHTML += `<div class="terminal-line">> ${msg}</div>`;
-        term.scrollTop = term.scrollHeight;
+        const time = new Date().toLocaleTimeString('id-ID', { hour12: false });
+        let className = 'terminal-line';
+        if (type === 'error') className += ' error';
+        if (type === 'info') className += ' info';
+        
+        term.innerHTML += `<div class="${className}">[${time}] $ ${msg}</div>`;
+        term.scrollTop = term.scrollHeight; // Auto scroll ke bawah
     }
 
     function startGenerate() {
-        let amt = document.getElementById('amount').value;
-        if (amt < 1 || amt > 50) return alert('Maksimal 50');
+        let amt = parseInt(document.getElementById('amount').value);
+        if (isNaN(amt) || amt < 1 || amt > 50) return alert('Jumlah harus antara 1 - 50');
         
         document.getElementById('result-text').value = '';
-        document.getElementById('terminal').innerHTML = '';
+        document.getElementById('terminal').innerHTML = ''; // Bersihkan terminal
         document.getElementById('btn-gen').disabled = true;
-        logTerm('Menghubungkan ke server...');
+        document.getElementById('btn-gen').innerText = '⏳ Sedang Memproses...';
+        
+        logTerm(`Menginisiasi pembuatan ${amt} akun...`, 'info');
+        logTerm('Menghubungkan ke API jerexd.my.id...');
 
-        // Consume SSE Proxy
+        // Consume SSE Streaming
         const source = new EventSource(`/api/gen?amount=${amt}`);
         let accounts = [];
 
         source.onmessage = function(event) {
             try {
                 const data = JSON.parse(event.data);
+                
                 if (data.status === 'starting') {
-                    logTerm(`Mulai: ${data.message}`);
+                    logTerm(`Mulai: ${data.message}`, 'info');
                 } else if (data.type === 'success') {
-                    logTerm(`[BERHASIL] ${data.message}`);
+                    logTerm(`BERHASIL (${data.progress}): ${data.message}`);
                     accounts.push(data.account);
+                    // Langsung update textarea tiap 1 sukses
                     document.getElementById('result-text').value = accounts.join('\n');
                 } else if (data.type === 'done') {
-                    logTerm(`SELESAI! Total: ${data.total}, Sukses: ${data.success}`);
-                    source.close();
-                    document.getElementById('btn-gen').disabled = false;
+                    logTerm(`[DONE] Total: ${data.total} | Sukses: ${data.success} | Gagal: ${data.failed}`, 'info');
+                    closeStream(source);
                 }
             } catch (e) {
-                logTerm("Menerima data stream...");
+                // Keep-alive atau parsing error
+                if(event.data && event.data.trim() !== '') {
+                    logTerm(`Received data chunk...`);
+                }
             }
         };
 
         source.onerror = function() {
-            logTerm('Koneksi terputus atau selesai.');
-            source.close();
-            document.getElementById('btn-gen').disabled = false;
+            logTerm('Koneksi stream terputus/selesai.', 'error');
+            closeStream(source);
         };
+    }
+
+    function closeStream(source) {
+        source.close();
+        document.getElementById('btn-gen').disabled = false;
+        document.getElementById('btn-gen').innerText = '⚡ Mulai Generate';
     }
 
     function copyResult() {
         const txt = document.getElementById('result-text').value;
-        if (!txt) return;
+        if (!txt) return alert('Belum ada hasil untuk disalin');
         navigator.clipboard.writeText(txt);
-        alert('Dicopy ke clipboard!');
+        alert('Disalin ke clipboard!');
     }
 
     function downloadResult() {
         const txt = document.getElementById('result-text').value;
-        if (!txt) return;
+        if (!txt) return alert('Belum ada hasil untuk diunduh');
         const blob = new Blob([txt], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'AM_Premium.txt';
+        a.download = `AM_Premium_${Date.now()}.txt`;
         a.click();
     }
 </script>
