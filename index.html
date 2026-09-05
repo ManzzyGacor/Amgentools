@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gen AM Tools</title>
+    <style>
+        :root { --bg: #121212; --panel: #1e1e1e; --text: #fff; --primary: #00ff88; --danger: #ff4444; }
+        body { font-family: monospace; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: var(--panel); padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 10px; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: white; box-sizing: border-box; }
+        button { background: var(--primary); color: #000; font-weight: bold; cursor: pointer; border: none; }
+        button:hover { opacity: 0.8; }
+        button.secondary { background: #444; color: white; }
+        .hidden { display: none; }
+        
+        /* Terminal UI */
+        .terminal { background: #000; color: #00ff00; padding: 10px; height: 150px; overflow-y: auto; font-size: 12px; border-radius: 5px; margin-bottom: 10px; }
+        .terminal-line { margin: 2px 0; }
+        
+        /* Result UI */
+        textarea { width: 100%; height: 100px; background: #000; color: #fff; border: 1px solid #333; padding: 10px; box-sizing: border-box; resize: none; margin-bottom: 10px; }
+        .btn-group { display: flex; gap: 10px; }
+        
+        /* Admin Box */
+        .admin-box { margin-top: 20px; padding: 15px; border: 1px dashed var(--primary); border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="auth-box">
+    <h2>Gen AM Tools - Login / Daftar</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="auth('login')">Login</button>
+    <button class="secondary" onclick="auth('register')">Daftar Akun Baru</button>
+    <div style="text-align:center; margin-top:10px;"><small id="auth-msg"></small></div>
+</div>
+
+<div class="container hidden" id="dashboard-box">
+    <h2>Gen AM Tools <span id="role-badge" style="font-size:12px; color:#aaa;"></span></h2>
+    <button class="secondary" onclick="logout()" style="width: auto; float: right; padding: 5px 10px; margin-top: -50px;">Logout</button>
+    
+    <div id="locked-view" class="hidden" style="text-align: center; padding: 20px 0;">
+        <p>Akses ditolak. Role Anda saat ini adalah <b>User</b>.</p>
+        <p>Silakan upgrade ke Premium untuk menggunakan tool ini.</p>
+        <button onclick="contactAdmin()" style="width:auto; padding: 10px 20px;">Hubungi Admin (WhatsApp)</button>
+    </div>
+
+    <div id="tool-view" class="hidden">
+        <label>Jumlah Generate (Max 50):</label>
+        <input type="number" id="amount" min="1" max="50" value="1">
+        <button onclick="startGenerate()" id="btn-gen">Mulai Generate</button>
+        
+        <h4>Terminal Log</h4>
+        <div class="terminal" id="terminal"></div>
+        
+        <h4>Hasil</h4>
+        <textarea id="result-text" readonly placeholder="Akun akan muncul di sini..."></textarea>
+        <div class="btn-group">
+            <button onclick="copyResult()">Copy TXT</button>
+            <button onclick="downloadResult()">Download TXT</button>
+        </div>
+    </div>
+
+    <div id="admin-view" class="admin-box hidden">
+        <h3 style="color:var(--primary); margin-top:0;">Admin Control Panel</h3>
+        <input type="number" id="wa-number" placeholder="Nomor WA Admin (contoh: 62812...)">
+        <button onclick="adminAction('setWa')">Simpan Nomor WA</button>
+        <hr style="border-color:#333; margin:15px 0;">
+        <input type="text" id="target-user" placeholder="Username untuk diupgrade">
+        <button onclick="adminAction('upgrade')">Upgrade ke Premium</button>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    let currentRole = null;
+    let waAdmin = "628123456789";
+
+    // Panggil init sekali saat load untuk auto-bikin database & akun man/admin
+    fetch('/api/db', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'init' }) });
+
+    async function reqApi(action, data = {}) {
+        const res = await fetch('/api/db', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, ...data })
+        });
+        return await res.json();
+    }
+
+    async function auth(action) {
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+        if (!u || !p) return alert('Isi username & password');
+        
+        const res = await reqApi(action, { username: u, password: p });
+        if (res.error) {
+            document.getElementById('auth-msg').innerText = res.error;
+            document.getElementById('auth-msg').style.color = 'var(--danger)';
+        } else {
+            currentUser = u;
+            currentRole = res.role;
+            loadDashboard();
+        }
+    }
+
+    async function loadDashboard() {
+        document.getElementById('auth-box').classList.add('hidden');
+        document.getElementById('dashboard-box').classList.remove('hidden');
+        document.getElementById('role-badge').innerText = `[${currentRole.toUpperCase()}] - ${currentUser}`;
+        
+        // Ambil data WA terbaru
+        const resWa = await reqApi('getWa');
+        if(resWa.wa) waAdmin = resWa.wa;
+
+        if (currentRole === 'user') {
+            document.getElementById('locked-view').classList.remove('hidden');
+            document.getElementById('tool-view').classList.add('hidden');
+        } else {
+            document.getElementById('locked-view').classList.add('hidden');
+            document.getElementById('tool-view').classList.remove('hidden');
+        }
+
+        if (currentRole === 'admin') {
+            document.getElementById('admin-view').classList.remove('hidden');
+            document.getElementById('wa-number').value = waAdmin;
+        }
+    }
+
+    function logout() {
+        currentUser = null; currentRole = null;
+        document.getElementById('auth-box').classList.remove('hidden');
+        document.getElementById('dashboard-box').classList.add('hidden');
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('auth-msg').innerText = '';
+    }
+
+    function contactAdmin() {
+        window.open(`https://wa.me/${waAdmin}?text=Halo%20Admin,%20saya%20ingin%20upgrade%20akun%20Gen%20AM%20Tools%20saya.%20Username:%20${currentUser}`, '_blank');
+    }
+
+    async function adminAction(action) {
+        const payload = { action, currentUser }; // bypass strict auth demi simplisitas, dalam real env ini dicek di backend
+        if (action === 'setWa') payload.waNumber = document.getElementById('wa-number').value;
+        if (action === 'upgrade') payload.targetUser = document.getElementById('target-user').value;
+        
+        const res = await reqApi(action, payload);
+        if(res.success) alert('Berhasil dieksekusi!');
+        else alert('Gagal: ' + res.error);
+    }
+
+    function logTerm(msg) {
+        const term = document.getElementById('terminal');
+        term.innerHTML += `<div class="terminal-line">> ${msg}</div>`;
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function startGenerate() {
+        let amt = document.getElementById('amount').value;
+        if (amt < 1 || amt > 50) return alert('Maksimal 50');
+        
+        document.getElementById('result-text').value = '';
+        document.getElementById('terminal').innerHTML = '';
+        document.getElementById('btn-gen').disabled = true;
+        logTerm('Menghubungkan ke server...');
+
+        // Consume SSE Proxy
+        const source = new EventSource(`/api/gen?amount=${amt}`);
+        let accounts = [];
+
+        source.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.status === 'starting') {
+                    logTerm(`Mulai: ${data.message}`);
+                } else if (data.type === 'success') {
+                    logTerm(`[BERHASIL] ${data.message}`);
+                    accounts.push(data.account);
+                    document.getElementById('result-text').value = accounts.join('\n');
+                } else if (data.type === 'done') {
+                    logTerm(`SELESAI! Total: ${data.total}, Sukses: ${data.success}`);
+                    source.close();
+                    document.getElementById('btn-gen').disabled = false;
+                }
+            } catch (e) {
+                logTerm("Menerima data stream...");
+            }
+        };
+
+        source.onerror = function() {
+            logTerm('Koneksi terputus atau selesai.');
+            source.close();
+            document.getElementById('btn-gen').disabled = false;
+        };
+    }
+
+    function copyResult() {
+        const txt = document.getElementById('result-text').value;
+        if (!txt) return;
+        navigator.clipboard.writeText(txt);
+        alert('Dicopy ke clipboard!');
+    }
+
+    function downloadResult() {
+        const txt = document.getElementById('result-text').value;
+        if (!txt) return;
+        const blob = new Blob([txt], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'AM_Premium.txt';
+        a.click();
+    }
+</script>
+</body>
+</html>
