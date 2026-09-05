@@ -1,41 +1,80 @@
-import { sql } from '@vercel/postgres';
+import { MongoClient } from 'mongodb';
+
+// Sangat disarankan menaruh string ini di Vercel > Settings > Environment Variables dengan nama MONGODB_URI
+// Agar password database tidak bocor jika kode ini di-push ke GitHub publik.
+const uri = process.env.MONGODB_URI || "mongodb+srv://manzzygenshin_db_user:OKdzMae2OLtMAqP2@jpmmanz.nax4l7g.mongodb.net/kingjpm?retryWrites=true&w=majority&appName=Jpmmanz";
+
+// Variabel global untuk cache koneksi (Penting untuk Vercel Serverless)
+let cachedClient = null;
+let cachedDb = null;
+
+async function connectToDatabase() {
+    if (cachedClient && cachedDb) return { client: cachedClient, db: cachedDb };
+    
+    const client = new MongoClient(uri);
+    await client.connect();
+    const db = client.db('kingjpm'); // Nama database dari link URL
+    
+    cachedClient = client;
+    cachedDb = db;
+    return { client, db };
+}
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
     
-    const { action, username, password, targetUser, waNumber, currentUser } = req.body;
+    const { action, username, password, targetUser, waNumber } = req.body;
 
     try {
+        const { db } = await connectToDatabase();
+        const usersCol = db.collection('am_users');
+        const settingsCol = db.collection('am_settings');
+
         switch(action) {
             case 'init':
-                // Auto create table dan user admin
-                await sql`CREATE TABLE IF NOT EXISTS am_users (username VARCHAR(255) PRIMARY KEY, password VARCHAR(255), role VARCHAR(50) DEFAULT 'user');`;
-                await sql`CREATE TABLE IF NOT EXISTS am_settings (key VARCHAR(255) PRIMARY KEY, value TEXT);`;
-                await sql`INSERT INTO am_users (username, password, role) VALUES ('man', 'admin', 'admin') ON CONFLICT DO NOTHING;`;
-                await sql`INSERT INTO am_settings (key, value) VALUES ('wa_admin', '628123456789') ON CONFLICT DO NOTHING;`;
+                // Auto create akun admin dan default WA
+                await usersCol.updateOne(
+                    { username: 'man' },
+                    { $setOnInsert: { username: 'man', password: 'admin', role: 'admin' } },
+                    { upsert: true }
+                );
+                await settingsCol.updateOne(
+                    { key: 'wa_admin' },
+                    { $setOnInsert: { key: 'wa_admin', value: '628123456789' } },
+                    { upsert: true }
+                );
                 return res.json({ success: true, message: "DB Ready" });
 
             case 'register':
-                const exist = await sql`SELECT * FROM am_users WHERE username=${username}`;
-                if (exist.rowCount > 0) return res.status(400).json({ error: 'Username sudah ada' });
-                await sql`INSERT INTO am_users (username, password) VALUES (${username}, ${password})`;
+                const exist = await usersCol.findOne({ username });
+                if (exist) return res.status(400).json({ error: 'Username sudah ada' });
+                
+                await usersCol.insertOne({ username, password, role: 'user' });
                 return res.json({ success: true, role: 'user' });
 
             case 'login':
-                const user = await sql`SELECT * FROM am_users WHERE username=${username} AND password=${password}`;
-                if (user.rowCount === 0) return res.status(401).json({ error: 'Username/Password salah' });
-                return res.json({ success: true, role: user.rows[0].role });
+                const user = await usersCol.findOne({ username, password });
+                if (!user) return res.status(401).json({ error: 'Username/Password salah' });
+                return res.json({ success: true, role: user.role });
 
             case 'getWa':
-                const wa = await sql`SELECT value FROM am_settings WHERE key='wa_admin'`;
-                return res.json({ success: true, wa: wa.rows[0]?.value });
+                const wa = await settingsCol.findOne({ key: 'wa_admin' });
+                return res.json({ success: true, wa: wa ? wa.value : null });
 
             case 'setWa':
-                await sql`UPDATE am_settings SET value=${waNumber} WHERE key='wa_admin'`;
+                await settingsCol.updateOne(
+                    { key: 'wa_admin' },
+                    { $set: { value: waNumber } },
+                    { upsert: true }
+                );
                 return res.json({ success: true });
 
             case 'upgrade':
-                await sql`UPDATE am_users SET role='premium' WHERE username=${targetUser}`;
+                const target = await usersCol.updateOne(
+                    { username: targetUser },
+                    { $set: { role: 'premium' } }
+                );
+                if (target.matchedCount === 0) return res.status(404).json({ error: 'Username tidak ditemukan' });
                 return res.json({ success: true });
                 
             default:
