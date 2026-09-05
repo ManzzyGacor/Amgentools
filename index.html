@@ -3,42 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gen AM Tools</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <title>AM Bulk Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --surface-hover: #334155;
-            --primary: #10b981;
-            --primary-hover: #059669;
-            --danger: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
+            --bg-main: #0a0f1c;
+            --bg-panel: #121927;
+            --bg-input: #1a2235;
+            --cyan: #00e5ff;
+            --cyan-hover: #00b3cc;
+            --text-main: #f1f5f9;
+            --text-muted: #8b9bb4;
+            --border: #212d45;
+            --danger: #ff4444;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
+            background-color: var(--bg-main);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
         }
 
-        .container {
-            background: var(--surface);
+        .app-container {
             width: 100%;
-            max-width: 600px;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border: 1px solid var(--border);
+            max-width: 480px; /* Lebar ala mobile/tablet seperti screenshot */
             animation: fadeIn 0.4s ease-out;
         }
 
@@ -49,236 +42,345 @@
 
         .hidden { display: none !important; }
 
-        h2 {
-            text-align: center;
-            margin-top: 0;
-            font-weight: 600;
-            color: var(--primary);
-            letter-spacing: 1px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-
-        .form-group { margin-bottom: 15px; }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        input[type="text"], input[type="password"], input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text-main);
-            font-size: 15px;
-            box-sizing: border-box;
-            transition: all 0.3s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background: var(--primary);
-            color: #fff;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 10px;
-        }
-
-        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        button:active { transform: translateY(1px); }
-        button:disabled { background: var(--surface-hover); cursor: not-allowed; color: var(--text-muted); }
-        
-        button.secondary { background: var(--surface-hover); color: var(--text-main); }
-        button.secondary:hover { background: var(--border); }
-        
-        .header-bar {
+        /* --- Header --- */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
-
-        .badge {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--primary);
-            padding: 5px 10px;
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header h1::before {
+            content: "✨";
+            color: var(--cyan);
+        }
+        .role-badge {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            padding: 4px 10px;
             border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
         }
 
-        /* Terminal UI */
-        .terminal-container {
-            background: #000;
-            border-radius: 8px;
-            border: 1px solid #333;
+        /* --- Panels --- */
+        .panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
             margin-bottom: 20px;
-            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .panel-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        /* --- Controls --- */
+        .slider-container { margin-bottom: 20px; }
+        .amount-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .amount-header span:last-child { color: var(--cyan); font-size: 14px; }
+        
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--cyan);
+            height: 6px;
+            background: var(--bg-input);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--cyan);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+
+        .quick-amounts {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .input-number-wrap {
+            display: flex;
+            align-items: center;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            flex: 1;
+        }
+        .input-number-wrap span { color: var(--text-muted); margin-right: 5px; }
+        .input-number-wrap input {
+            background: transparent; border: none; color: white;
+            font-size: 14px; width: 100%; outline: none;
         }
         
-        .terminal-header {
-            background: #1e1e1e;
-            padding: 8px 12px;
-            font-size: 12px;
-            color: #888;
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            border-bottom: 1px solid #333;
-        }
-
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .dot.r { background: #ff5f56; }
-        .dot.y { background: #ffbd2e; }
-        .dot.g { background: #27c93f; }
-
-        .terminal {
-            font-family: 'JetBrains Mono', monospace;
-            color: #00ff00;
-            padding: 12px;
-            height: 180px;
-            overflow-y: auto;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-        .terminal-line { margin: 2px 0; word-break: break-all; }
-        .terminal-line.error { color: var(--danger); }
-        .terminal-line.info { color: #00d2ff; }
-
-        /* Textarea Result */
-        textarea {
-            width: 100%;
-            height: 120px;
-            background: var(--bg);
-            color: var(--primary);
+        .btn-quick {
+            background: var(--bg-input);
             border: 1px solid var(--border);
-            padding: 12px;
+            color: var(--text-muted);
+            border-radius: 6px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+        .btn-quick:hover { background: var(--border); color: white; }
+
+        /* --- Inputs & Buttons --- */
+        .input-group { margin-bottom: 15px; }
+        .input-label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+        
+        .input-text {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px 15px;
             border-radius: 8px;
             box-sizing: border-box;
-            resize: vertical;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
         }
-
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .input-text:focus { border-color: var(--cyan); }
+        .input-text:disabled { opacity: 0.7; cursor: not-allowed; }
         
-        /* Admin Box */
-        .admin-box {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-        }
-        .admin-title { margin-top: 0; font-size: 16px; color: #eab308; display: flex; align-items: center; gap: 8px;}
+        .subtext { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
 
-        /* Alert */
-        .msg-box { text-align: center; margin-top: 15px; font-size: 14px; min-height: 20px; }
+        .btn-primary {
+            width: 100%;
+            background: var(--cyan);
+            color: #000;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+            transition: 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover { background: var(--cyan-hover); transform: translateY(-1px); }
+        .btn-primary:disabled { background: var(--bg-input); color: var(--text-muted); box-shadow: none; cursor: not-allowed; }
+        
+        .btn-secondary { background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border); width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; }
+
+        /* --- Progress & Terminal --- */
+        .progress-bar-container {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; background: var(--bg-panel); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;
+        }
+        .progress-text { font-size: 14px; font-weight: 600; }
+        .progress-value { color: var(--cyan); font-family: 'JetBrains Mono', monospace; }
+
+        .terminal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600;
+        }
+        .terminal-status { display: flex; align-items: center; gap: 6px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #555; }
+        .status-dot.active { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+
+        .terminal-box {
+            background: #000; border: 1px solid var(--border); border-radius: 8px;
+            padding: 15px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+            color: var(--text-muted); height: 120px; overflow-y: auto;
+        }
+        .term-line { margin-bottom: 5px; line-height: 1.4; word-break: break-all; }
+        .term-line.info { color: #8892b0; }
+        .term-line.success { color: var(--cyan); }
+        .term-line.error { color: var(--danger); }
+
+        /* --- Result Links --- */
+        .result-list { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .result-item {
+            background: var(--bg-input); border: 1px solid var(--border); padding: 12px; border-radius: 8px;
+            display: flex; justify-content: space-between; align-items: center; font-size: 13px;
+        }
+        .result-email { font-family: 'JetBrains Mono', monospace; color: var(--text-main); }
+        .btn-link {
+            background: rgba(0, 229, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 229, 255, 0.2);
+            padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600; transition: 0.2s;
+        }
+        .btn-link:hover { background: var(--cyan); color: #000; }
+        
+        textarea { width: 100%; height: 80px; background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-top: 10px; resize: none; font-size: 12px; font-family: monospace; box-sizing: border-box;}
+        .action-btns { display: flex; gap: 10px; margin-top: 10px; }
+
+        /* Locked Screen */
+        .locked-box { text-align: center; padding: 40px 20px; background: var(--bg-panel); border: 1px dashed var(--danger); border-radius: 12px; }
+
     </style>
 </head>
 <body>
 
-<!-- WIDGET LOGIN / REGISTER -->
-<div class="container" id="auth-box">
-    <h2>GEN AM TOOLS</h2>
-    <div class="form-group">
-        <label>Username</label>
-        <input type="text" id="username" placeholder="Masukkan username">
+<!-- AUTH SCREEN -->
+<div class="app-container" id="auth-box">
+    <div class="panel">
+        <h2 style="text-align: center; color: var(--cyan); margin-top: 0;">✨ AM Login</h2>
+        <div class="input-group">
+            <input type="text" id="username" class="input-text" placeholder="Username">
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" class="input-text" placeholder="Password">
+        </div>
+        <button class="btn-primary" onclick="auth('login')">Login</button>
+        <button class="btn-secondary" style="margin-top: 10px;" onclick="auth('register')">Daftar Akun Baru</button>
+        <div style="text-align: center; margin-top: 15px; font-size: 13px; color: var(--cyan);" id="auth-msg"></div>
     </div>
-    <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="••••••••">
-    </div>
-    <button onclick="auth('login')">Login to Dashboard</button>
-    <button class="secondary" onclick="auth('register')">Daftar Akun Baru</button>
-    <div class="msg-box" id="auth-msg"></div>
 </div>
 
-<!-- WIDGET DASHBOARD -->
-<div class="container hidden" id="dashboard-box">
-    <div class="header-bar">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <h2 style="margin:0; border:none; padding:0;">DASHBOARD</h2>
-            <span class="badge" id="role-badge"></span>
-        </div>
-        <button class="secondary" onclick="logout()" style="width: auto; padding: 6px 12px; margin: 0; font-size: 13px;">Logout</button>
-    </div>
+<!-- DASHBOARD SCREEN -->
+<div class="app-container hidden" id="dashboard-box">
     
-    <!-- LOCKED VIEW (Untuk User Biasa) -->
-    <div id="locked-view" class="hidden" style="text-align: center; padding: 40px 20px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px dashed var(--danger);">
-        <svg style="width:50px; fill:var(--danger); margin-bottom:15px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-9a1 1 0 0 0-1-1h-1V5a6 6 0 1 0-12 0v2H7a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8zm-9-3a4 4 0 1 1 8 0v2H9V5z"/></svg>
-        <h3 style="margin-top:0;">Akses Premium Dibutuhkan</h3>
-        <p style="color:var(--text-muted); font-size: 14px; margin-bottom:20px;">Role Anda saat ini adalah <b>User</b>. Anda tidak dapat menggunakan tool Generator ini.</p>
-        <button onclick="contactAdmin()" style="width:auto; padding: 10px 24px; background: #25D366; color:#fff;">Upgrade via WhatsApp Admin</button>
+    <div class="header">
+        <h1>AM Bulk Studio</h1>
+        <div class="role-badge" id="role-badge" onclick="logout()">👑 Admin</div>
     </div>
 
-    <!-- TOOL VIEW (Untuk Premium / Admin) -->
+    <!-- LOCKED VIEW -->
+    <div id="locked-view" class="locked-box hidden">
+        <h3 style="color: var(--danger); margin-top:0;">Akses Ditolak</h3>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom:20px;">Role Anda saat ini adalah <b>User</b>. Silakan upgrade ke Premium.</p>
+        <button class="btn-primary" style="background:#25D366; box-shadow:none; color:white;" onclick="contactAdmin()">Upgrade via WA</button>
+    </div>
+
+    <!-- TOOL VIEW -->
     <div id="tool-view" class="hidden">
-        <div class="form-group">
-            <label>Jumlah Generate (Max 50)</label>
-            <input type="number" id="amount" min="1" max="50" value="1">
-        </div>
-        <button onclick="startGenerate()" id="btn-gen">⚡ Mulai Generate</button>
         
-        <div style="margin-top: 25px;">
-            <label>Terminal Logs</label>
-            <div class="terminal-container">
-                <div class="terminal-header">
-                    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-                    <span style="margin-left: 10px;">root@gen-am:~#</span>
+        <!-- Main Settings Panel -->
+        <div class="panel">
+            <div class="slider-container">
+                <div class="amount-header">
+                    <span>AMOUNT</span>
+                    <span id="slider-val">1</span>
                 </div>
-                <div class="terminal" id="terminal">
-                    <div class="terminal-line info">Waiting for command...</div>
+                <input type="range" id="amountRange" min="1" max="50" value="1" oninput="syncAmount(this.value)">
+                
+                <div class="quick-amounts">
+                    <div class="input-number-wrap">
+                        <span>#</span>
+                        <input type="number" id="amountNum" value="1" min="1" max="50" oninput="syncAmount(this.value)">
+                    </div>
+                    <button class="btn-quick" onclick="syncAmount(5)">5</button>
+                    <button class="btn-quick" onclick="syncAmount(10)">10</button>
+                    <button class="btn-quick" onclick="syncAmount(50)">50</button>
                 </div>
             </div>
+
+            <div class="input-group" style="margin-top: 25px;">
+                <div class="input-label">🔒 ORDER ID</div>
+                <input type="text" class="input-text" value="ManzzyID" disabled>
+                <div class="subtext">Order ID tetap & tidak dapat diubah.</div>
+            </div>
+
+            <button class="btn-primary" id="btn-gen" onclick="startGenerate()">
+                ⚡ GENERATE
+            </button>
         </div>
-        
-        <div>
-            <label>Hasil Generate (Format: Email|Password)</label>
-            <textarea id="result-text" readonly placeholder="Akun akan muncul di sini..."></textarea>
-            <div class="btn-group">
-                <button class="secondary" onclick="copyResult()">📋 Copy TXT</button>
-                <button class="secondary" onclick="downloadResult()">💾 Download TXT</button>
+
+        <!-- Member Management (UI Only based on screenshot) -->
+        <div style="text-align: center; margin-bottom: 15px; color: var(--text-main); font-size: 14px; font-weight: 600;">
+            👑 Member Management
+        </div>
+        <div class="panel" style="padding: 15px;">
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom: 5px;">
+                <span style="color:var(--cyan);">📧</span>
+                <span style="font-size:14px; font-weight:600;">Premium via Email</span>
+            </div>
+            <div class="subtext" style="margin-bottom: 15px;">Kirim magic link ke email Alight Motion, lalu verifikasi.</div>
+            
+            <div style="display:flex; gap:10px;">
+                <input type="text" class="input-text" placeholder="nama@email.com" style="flex: 2; padding: 10px;">
+                <button class="btn-secondary" style="flex: 1; padding: 10px; font-size: 12px;">SEND MAGIC</button>
             </div>
         </div>
+
+        <!-- Progress Box -->
+        <div class="progress-bar-container">
+            <span class="progress-text">Progress</span>
+            <span class="progress-value" id="progress-text">0 / 0</span>
+        </div>
+
+        <!-- Terminal Box -->
+        <div class="terminal-header">
+            <span>SSE TERMINAL LOG</span>
+            <div class="terminal-status">
+                <span id="term-status-text">IDLE</span>
+                <div class="status-dot" id="term-dot"></div>
+            </div>
+        </div>
+        <div class="terminal-box" id="terminal">
+            <div class="term-line info">// Menunggu perintah generate...</div>
+        </div>
+
+        <!-- Result Box -->
+        <div id="result-container" class="hidden" style="margin-top: 20px;">
+            <div class="terminal-header"><span>HASIL GENERATE</span></div>
+            
+            <!-- Clickable links will appear here -->
+            <div class="result-list" id="result-list"></div>
+            
+            <!-- TXT format -->
+            <textarea id="result-raw" readonly placeholder="Raw TXT akan muncul di sini..."></textarea>
+            <div class="action-btns">
+                <button class="btn-secondary" onclick="copyResult()">📋 Copy TXT</button>
+                <button class="btn-secondary" onclick="downloadResult()">💾 Download</button>
+            </div>
+        </div>
+
     </div>
 
     <!-- ADMIN PANEL -->
-    <div id="admin-view" class="admin-box hidden">
-        <h3 class="admin-title">🛡️ Admin Control Panel</h3>
-        <div class="form-group">
-            <label>Nomor WA Admin (628...)</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="number" id="wa-number" placeholder="628xxx">
-                <button onclick="adminAction('setWa')" style="width:100px; margin-top:0;">Simpan</button>
-            </div>
+    <div id="admin-view" class="panel hidden" style="margin-top: 20px; border-color: var(--cyan);">
+        <div class="panel-title" style="color: var(--cyan);">Admin Settings</div>
+        <div class="input-group">
+            <input type="number" id="wa-number" class="input-text" placeholder="WA Admin (628...)">
+            <button class="btn-secondary" style="margin-top: 10px;" onclick="adminAction('setWa')">Simpan WA</button>
         </div>
-        <div class="form-group" style="margin-bottom:0;">
-            <label>Upgrade User ke Premium</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="target-user" placeholder="Username target">
-                <button onclick="adminAction('upgrade')" style="width:100px; margin-top:0;">Upgrade</button>
-            </div>
+        <hr style="border-color: var(--border); margin: 15px 0;">
+        <div class="input-group">
+            <input type="text" id="target-user" class="input-text" placeholder="Username Target">
+            <button class="btn-secondary" style="margin-top: 10px;" onclick="adminAction('upgrade')">Upgrade Premium</button>
         </div>
     </div>
+
 </div>
 
 <script>
@@ -286,8 +388,18 @@
     let currentRole = null;
     let waAdmin = "628123456789";
 
-    // Auto-init DB saat page load
+    // Auto-init DB
     fetch('/api/db', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'init' }) });
+
+    // UI Sync Amount
+    function syncAmount(val) {
+        let v = parseInt(val);
+        if (v < 1) v = 1;
+        if (v > 50) v = 50;
+        document.getElementById('amountRange').value = v;
+        document.getElementById('amountNum').value = v;
+        document.getElementById('slider-val').innerText = v;
+    }
 
     async function reqApi(action, data = {}) {
         const res = await fetch('/api/db', {
@@ -301,13 +413,13 @@
     function showMsg(text, isError = false) {
         const el = document.getElementById('auth-msg');
         el.innerText = text;
-        el.style.color = isError ? 'var(--danger)' : 'var(--primary)';
+        el.style.color = isError ? 'var(--danger)' : 'var(--cyan)';
     }
 
     async function auth(action) {
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value.trim();
-        if (!u || !p) return showMsg('Harap isi username dan password!', true);
+        if (!u || !p) return showMsg('Isi username dan password!', true);
         
         showMsg('Memproses...');
         const res = await reqApi(action, { username: u, password: p });
@@ -325,15 +437,13 @@
     async function loadDashboard() {
         document.getElementById('auth-box').classList.add('hidden');
         document.getElementById('dashboard-box').classList.remove('hidden');
-        document.getElementById('role-badge').innerText = currentRole.toUpperCase();
+        document.getElementById('role-badge').innerHTML = currentRole === 'admin' ? '👑 Admin' : '👤 User';
         document.getElementById('username').value = '';
         document.getElementById('password').value = '';
         
-        // Fetch WA Number terbaru
         const resWa = await reqApi('getWa');
         if(resWa.wa) waAdmin = resWa.wa;
 
-        // Atur Tampilan Berdasarkan Role
         if (currentRole === 'user') {
             document.getElementById('locked-view').classList.remove('hidden');
             document.getElementById('tool-view').classList.add('hidden');
@@ -342,7 +452,6 @@
             document.getElementById('tool-view').classList.remove('hidden');
         }
 
-        // Tampilkan panel admin khusus role admin
         if (currentRole === 'admin') {
             document.getElementById('admin-view').classList.remove('hidden');
             document.getElementById('wa-number').value = waAdmin;
@@ -359,7 +468,7 @@
     }
 
     function contactAdmin() {
-        const text = encodeURIComponent(`Halo Admin, saya ingin upgrade akun Gen AM Tools.\nUsername: ${currentUser}`);
+        const text = encodeURIComponent(`Halo Admin, saya ingin upgrade akun AM Bulk Studio.\nUsername: ${currentUser}`);
         window.open(`https://wa.me/${waAdmin}?text=${text}`, '_blank');
     }
 
@@ -368,94 +477,115 @@
         if (action === 'setWa') payload.waNumber = document.getElementById('wa-number').value;
         if (action === 'upgrade') payload.targetUser = document.getElementById('target-user').value;
         
-        if(!payload.waNumber && !payload.targetUser) return alert('Isi data terlebih dahulu');
-
         const res = await reqApi(action, payload);
         if(res.success) {
-            alert('Aksi berhasil dieksekusi!');
+            alert('Sukses!');
             if(action === 'upgrade') document.getElementById('target-user').value = '';
-        } else {
-            alert('Gagal: ' + res.error);
-        }
+        } else alert('Gagal: ' + res.error);
     }
 
-    function logTerm(msg, type = 'normal') {
+    function logTerm(msg, type = 'info') {
         const term = document.getElementById('terminal');
-        const time = new Date().toLocaleTimeString('id-ID', { hour12: false });
-        let className = 'terminal-line';
-        if (type === 'error') className += ' error';
-        if (type === 'info') className += ' info';
-        
-        term.innerHTML += `<div class="${className}">[${time}] $ ${msg}</div>`;
-        term.scrollTop = term.scrollHeight; // Auto scroll ke bawah
+        let prefix = type === 'info' ? '>' : (type === 'success' ? '✓' : 'x');
+        term.innerHTML += `<div class="term-line ${type}"><span>${prefix}</span> ${msg}</div>`;
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function setTerminalStatus(active, text) {
+        document.getElementById('term-status-text').innerText = text;
+        const dot = document.getElementById('term-dot');
+        if (active) dot.classList.add('active');
+        else dot.classList.remove('active');
     }
 
     function startGenerate() {
-        let amt = parseInt(document.getElementById('amount').value);
-        if (isNaN(amt) || amt < 1 || amt > 50) return alert('Jumlah harus antara 1 - 50');
+        let amt = parseInt(document.getElementById('amountNum').value);
         
-        document.getElementById('result-text').value = '';
-        document.getElementById('terminal').innerHTML = ''; // Bersihkan terminal
-        document.getElementById('btn-gen').disabled = true;
-        document.getElementById('btn-gen').innerText = '⏳ Sedang Memproses...';
+        // Reset UI
+        document.getElementById('result-container').classList.remove('hidden');
+        document.getElementById('result-list').innerHTML = '';
+        document.getElementById('result-raw').value = '';
+        document.getElementById('terminal').innerHTML = '';
+        document.getElementById('progress-text').innerText = `0 / ${amt}`;
         
-        logTerm(`Menginisiasi pembuatan ${amt} akun...`, 'info');
-        logTerm('Menghubungkan ke API jerexd.my.id...');
+        const btn = document.getElementById('btn-gen');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ PROCESSING...';
+        setTerminalStatus(true, 'RUNNING');
+        
+        logTerm(`Inisiasi generate ${amt} akun...`, 'info');
 
-        // Consume SSE Streaming
         const source = new EventSource(`/api/gen?amount=${amt}`);
-        let accounts = [];
+        let accountsRaw = [];
+        let successCount = 0;
 
         source.onmessage = function(event) {
             try {
                 const data = JSON.parse(event.data);
                 
                 if (data.status === 'starting') {
-                    logTerm(`Mulai: ${data.message}`, 'info');
+                    logTerm(`Status: ${data.message}`, 'info');
                 } else if (data.type === 'success') {
-                    logTerm(`BERHASIL (${data.progress}): ${data.message}`);
-                    accounts.push(data.account);
-                    // Langsung update textarea tiap 1 sukses
-                    document.getElementById('result-text').value = accounts.join('\n');
+                    successCount++;
+                    document.getElementById('progress-text').innerText = `${successCount} / ${amt}`;
+                    logTerm(`Sukses: ${data.account.split('|')[0]}`, 'success');
+                    
+                    // Parsing Email, Pass, Link
+                    const [email, pass] = data.account.split('|');
+                    const link = data.login_url || `https://generator.email/${email}`;
+                    
+                    // Tambah ke Visual List (Tombol)
+                    const itemHTML = `
+                        <div class="result-item">
+                            <span class="result-email">${email}</span>
+                            <a href="${link}" target="_blank" class="btn-link">Buka Email</a>
+                        </div>
+                    `;
+                    document.getElementById('result-list').insertAdjacentHTML('beforeend', itemHTML);
+                    
+                    // Tambah ke Raw TXT format: email|pass|link
+                    accountsRaw.push(`${email}|${pass}|${link}`);
+                    document.getElementById('result-raw').value = accountsRaw.join('\n');
+                    
                 } else if (data.type === 'done') {
-                    logTerm(`[DONE] Total: ${data.total} | Sukses: ${data.success} | Gagal: ${data.failed}`, 'info');
+                    logTerm(`Selesai. Sukses: ${data.success}, Gagal: ${data.failed}`, 'info');
                     closeStream(source);
                 }
             } catch (e) {
-                // Keep-alive atau parsing error
                 if(event.data && event.data.trim() !== '') {
-                    logTerm(`Received data chunk...`);
+                    logTerm(`Menerima byte streaming...`, 'info');
                 }
             }
         };
 
         source.onerror = function() {
-            logTerm('Koneksi stream terputus/selesai.', 'error');
+            logTerm('Koneksi terputus/selesai.', 'error');
             closeStream(source);
         };
     }
 
     function closeStream(source) {
         source.close();
-        document.getElementById('btn-gen').disabled = false;
-        document.getElementById('btn-gen').innerText = '⚡ Mulai Generate';
+        const btn = document.getElementById('btn-gen');
+        btn.disabled = false;
+        btn.innerHTML = '⚡ GENERATE';
+        setTerminalStatus(false, 'IDLE');
     }
 
     function copyResult() {
-        const txt = document.getElementById('result-text').value;
-        if (!txt) return alert('Belum ada hasil untuk disalin');
+        const txt = document.getElementById('result-raw').value;
+        if (!txt) return alert('Kosong!');
         navigator.clipboard.writeText(txt);
         alert('Disalin ke clipboard!');
     }
 
     function downloadResult() {
-        const txt = document.getElementById('result-text').value;
-        if (!txt) return alert('Belum ada hasil untuk diunduh');
+        const txt = document.getElementById('result-raw').value;
+        if (!txt) return alert('Kosong!');
         const blob = new Blob([txt], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `AM_Premium_${Date.now()}.txt`;
+        a.href = URL.createObjectURL(blob);
+        a.download = `AM_Premium_Bulk_${Date.now()}.txt`;
         a.click();
     }
 </script>
