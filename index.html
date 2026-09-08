@@ -3,227 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AM Bulk Studio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <title>Gen AM Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     
     <!-- Library FingerprintJS (HWID Scanner) -->
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-    
+
     <style>
         :root {
-            --bg-main: #0b101e;
-            --bg-card: #131b2f;
-            --bg-input: #0f1524;
-            --accent: #00e5ff;
-            --accent-hover: #00b3cc;
-            --text-main: #e2e8f0;
-            --text-muted: #64748b;
-            --border: #1f2940;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --primary: #10b981;
+            --primary-hover: #059669;
             --danger: #ef4444;
-            --success: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 480px; animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+        }
+
+        .container {
+            background: var(--surface);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .hidden { display: none !important; }
 
-        /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-top: 10px; }
-        .header-title { font-size: 18px; font-weight: 600; font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; gap: 8px; }
-        .header-title svg { fill: var(--accent); width: 18px; }
-        .role-badge { background: rgba(0, 229, 255, 0.1); border: 1px solid rgba(0, 229, 255, 0.2); color: var(--accent); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-        .role-badge:hover { background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: rgba(239, 68, 68, 0.2); }
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
 
-        /* CARDS & INPUTS */
-        .card { background: var(--card-bg, transparent); margin-bottom: 20px; }
-        .label { font-size: 12px; font-weight: 600; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .label svg { fill: var(--text-muted); width: 14px; }
-        .input-box { background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 15px; }
-        .input-box input { background: transparent; border: none; color: var(--text-main); font-size: 15px; width: 100%; outline: none; font-family: 'JetBrains Mono', monospace; }
-        .input-hint { font-size: 12px; color: var(--text-muted); margin-top: 8px; display: block; }
+        .form-group { margin-bottom: 15px; }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
 
-        /* SLIDER */
-        .slider-container { display: flex; flex-direction: column; gap: 15px; background: var(--bg-card); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-        .slider-header { display: flex; justify-content: space-between; align-items: center; }
-        .slider-header .val { font-size: 16px; color: var(--accent); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; margin-top: -7px; box-shadow: 0 0 10px rgba(0, 229, 255, 0.5); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--border); border-radius: 2px; }
-        .presets { display: flex; gap: 10px; margin-top: 5px; }
-        .preset-input { flex: 2; background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; align-items: center; gap: 8px; }
-        .preset-input input { background: transparent; border: none; color: var(--text-main); width: 100%; outline: none; font-family: 'JetBrains Mono', monospace; }
-        .preset-btn { flex: 1; background: var(--bg-input); border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .preset-btn:hover { background: var(--border); color: var(--text-main); }
+        input[type="text"], input[type="password"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-main);
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
 
-        /* BUTTONS */
-        .btn-primary { width: 100%; background: var(--accent); color: #000; font-weight: 700; font-size: 15px; padding: 16px; border-radius: 8px; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-primary:hover { background: var(--accent-hover); }
-        .btn-primary:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
-        .btn-primary svg { fill: #000; width: 16px; }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); }
 
-        /* SECTIONS & ADMIN */
-        .section-title { text-align: center; font-size: 14px; font-weight: 600; color: var(--text-main); margin: 30px 0 20px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .section-title svg { fill: var(--success); width: 16px; }
-        .email-card { background: var(--bg-card); border-radius: 12px; padding: 20px; border: 1px solid var(--border); margin-bottom: 20px;}
-        .email-card p { margin: 0 0 15px 0; font-size: 12px; color: var(--text-muted); }
-        .input-group { display: flex; gap: 10px; }
-        .input-group .input-box { flex: 1; padding: 12px; display: flex; align-items: center; gap: 10px; }
-        .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-main); padding: 0 15px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        button:active { transform: translateY(1px); }
+        button:disabled { background: var(--surface-hover); cursor: not-allowed; color: var(--text-muted); }
+        
+        button.secondary { background: var(--surface-hover); color: var(--text-main); }
+        button.secondary:hover { background: var(--border); }
+        
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+        .badge {
+            background: rgba(16, 185, 129, 0.1); color: var(--primary); padding: 5px 10px;
+            border-radius: 6px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Terminal UI */
+        .terminal-container { background: #000; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; overflow: hidden; }
+        .terminal-header { background: #1e1e1e; padding: 8px 12px; font-size: 12px; color: #888; display: flex; gap: 6px; align-items: center; border-bottom: 1px solid #333; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.r { background: #ff5f56; } .dot.y { background: #ffbd2e; } .dot.g { background: #27c93f; }
+
+        .terminal { font-family: 'JetBrains Mono', monospace; color: #00ff00; padding: 12px; height: 180px; overflow-y: auto; font-size: 13px; line-height: 1.5; }
+        .terminal-line { margin: 2px 0; word-break: break-all; }
+        .terminal-line.error { color: var(--danger); }
+        .terminal-line.info { color: #00d2ff; }
+
+        /* Textarea Result */
+        textarea {
+            width: 100%; height: 120px; background: var(--bg); color: var(--primary);
+            border: 1px solid var(--border); padding: 12px; border-radius: 8px; box-sizing: border-box;
+            resize: vertical; font-family: 'JetBrains Mono', monospace; font-size: 13px;
+        }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        
+        /* Admin Box */
         .admin-box { margin-top: 30px; padding: 20px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); border-radius: 8px; }
+        .admin-title { margin-top: 0; font-size: 16px; color: #eab308; display: flex; align-items: center; gap: 8px;}
+        .msg-box { text-align: center; margin-top: 15px; font-size: 14px; min-height: 20px; }
 
-        /* TERMINAL & RESULTS */
-        .progress-bar { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; padding: 15px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-        .terminal-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; }
-        .terminal-box { background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 15px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); }
-        .term-top { display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-main); font-weight: 600; }
-        .status-dot { display: inline-block; width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%; margin-right: 5px; transition: 0.3s; }
-        .status-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-        .term-logs { height: 120px; overflow-y: auto; color: #8892b0; line-height: 1.6; }
-        .term-logs .highlight { color: var(--accent); }
-        .term-logs .success { color: var(--success); }
-        .result-list { display: flex; flex-direction: column; gap: 10px; }
-        .result-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-link { background: rgba(0, 229, 255, 0.1); color: var(--accent); text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: 600; border: 1px solid rgba(0,229,255,0.2);}
-        textarea.raw-result { width: 100%; height: 100px; background: var(--bg-input); border: 1px solid var(--border); color: var(--text-muted); padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 11px; font-family: monospace; resize: none; box-sizing: border-box; }
-        .auth-wrapper { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border); }
-        .auth-wrapper h2 { text-align: center; color: var(--accent); margin-top: 0; }
+        /* Clickable Link Box */
+        .link-box { background: var(--bg); padding: 10px; border-radius: 8px; border: 1px dashed var(--primary); margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .link-box a { color: var(--primary); text-decoration: none; font-weight: bold; border: 1px solid var(--primary); padding: 5px 10px; border-radius: 4px; font-size: 12px; }
+        .link-box a:hover { background: var(--primary); color: #000; }
     </style>
 </head>
 <body>
 
-<!-- WIDGET LOGIN -->
-<div class="app-container" id="auth-box">
-    <div class="auth-wrapper">
-        <h2>AM Bulk Studio</h2>
-        <div class="input-box" style="margin-bottom:15px;">
-            <input type="text" id="username" placeholder="Username">
-        </div>
-        <div class="input-box" style="margin-bottom:15px;">
-            <input type="password" id="password" placeholder="Password">
-        </div>
-        <button class="btn-primary" onclick="auth('login')" style="margin-bottom: 10px;">Login</button>
-        <button class="btn-primary" onclick="auth('register')" style="background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border);">Daftar</button>
-        <div id="auth-msg" style="text-align:center; margin-top:15px; font-size:13px; color:var(--danger);"></div>
+<!-- WIDGET LOGIN / REGISTER -->
+<div class="container" id="auth-box">
+    <h2>GEN AM TOOLS</h2>
+    <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="Masukkan username">
     </div>
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••">
+    </div>
+    <button onclick="auth('login')">Login to Dashboard</button>
+    <button class="secondary" onclick="auth('register')">Daftar Akun Baru</button>
+    <div class="msg-box" id="auth-msg"></div>
 </div>
 
-<!-- DASHBOARD UTAMA -->
-<div class="app-container hidden" id="dashboard-box">
+<!-- WIDGET DASHBOARD -->
+<div class="container hidden" id="dashboard-box">
+    <div class="header-bar">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <h2 style="margin:0; border:none; padding:0;">DASHBOARD</h2>
+            <span class="badge" id="role-badge"></span>
+        </div>
+        <button class="secondary" onclick="logout()" style="width: auto; padding: 6px 12px; margin: 0; font-size: 13px;">Logout</button>
+    </div>
     
-    <div class="header">
-        <div class="header-title"><svg viewBox="0 0 24 24"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"/></svg> AM Bulk Studio</div>
-        <div class="role-badge" id="role-badge" onclick="logout()" title="Logout">
-            <span id="role-text">Admin</span>
-        </div>
+    <!-- LOCKED VIEW (Untuk User Biasa) -->
+    <div id="locked-view" class="hidden" style="text-align: center; padding: 40px 20px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px dashed var(--danger);">
+        <h3 style="margin-top:0; color:var(--danger);">Akses Premium Dibutuhkan</h3>
+        <p style="color:var(--text-muted); font-size: 14px; margin-bottom:20px;">Role Anda saat ini adalah <b>User</b>. Anda tidak dapat menggunakan tool Generator ini.</p>
+        <button onclick="contactAdmin()" style="width:auto; padding: 10px 24px; background: #25D366; color:#fff;">Upgrade via WhatsApp Admin</button>
     </div>
 
-    <div class="slider-container">
-        <div class="slider-header">
-            <span class="label" style="margin:0;">AMOUNT</span>
-            <span class="val" id="amount-val">1</span>
+    <!-- TOOL VIEW (Untuk Premium / Admin) -->
+    <div id="tool-view" class="hidden">
+        <div class="form-group">
+            <label>Jumlah Generate (Max 50)</label>
+            <input type="number" id="amount" min="1" max="50" value="1">
         </div>
-        <input type="range" id="amount-slider" min="1" max="100" value="1" oninput="syncAmount(this.value)">
-        <div class="presets">
-            <div class="preset-input"><span style="color:var(--text-muted);">#</span><input type="number" id="amount-input" value="1" min="1" max="100" oninput="syncAmount(this.value)"></div>
-            <button class="preset-btn" onclick="syncAmount(5)">5</button>
-            <button class="preset-btn" onclick="syncAmount(10)">10</button>
-            <button class="preset-btn" onclick="syncAmount(50)">50</button>
-            <button class="preset-btn" onclick="syncAmount(100)">100</button>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="label"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> ORDER ID</div>
-        <div class="input-box" style="opacity: 0.7;"><input type="text" value="ManzzyID" readonly></div>
-    </div>
-
-    <button class="btn-primary" id="btn-gen" onclick="startGenerate()">⚡ GENERATE</button>
-
-    <div class="section-title"><svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg> Member Management</div>
-    <div class="email-card">
-        <div class="label" style="margin-bottom: 5px;">Premium via Email</div>
-        <p>Kirim magic link ke email Alight Motion.</p>
-        <div class="input-group">
-            <div class="input-box"><input type="text" id="manual-email" placeholder="nama@email.com" style="font-size:13px;"></div>
-            <button class="btn-secondary" onclick="logTerm('Mengirim magic link ke ' + document.getElementById('manual-email').value + '...', 'info')">GET LINK MAGIC</button>
-        </div>
-    </div>
-
-    <!-- PANEL ADMIN (TERSEMBUNYI UNTUK USER) -->
-    <div id="admin-view" class="admin-box hidden">
-        <h3 style="color:#eab308; margin-top:0; font-size: 14px;">🛡️ ADMIN PANEL</h3>
+        <button onclick="startGenerate()" id="btn-gen">⚡ Mulai Generate</button>
         
-        <div style="margin-bottom:15px;">
-            <div class="label">SET WA ADMIN</div>
-            <div style="display:flex; gap:10px;">
-                <input type="number" id="wa-number" placeholder="628xxx" style="flex:1; padding:8px; border-radius:4px; border:none;">
-                <button onclick="adminAction('setWa')" style="padding:8px 15px;">Save</button>
+        <div style="margin-top: 25px;">
+            <label>Terminal Logs</label>
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+                    <span style="margin-left: 10px;">root@gen-am:~#</span>
+                </div>
+                <div class="terminal" id="terminal">
+                    <div class="terminal-line info">Waiting for command...</div>
+                </div>
             </div>
         </div>
-
-        <div style="margin-bottom:15px;">
-            <div class="label">UPGRADE PREMIUM</div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="target-user" placeholder="Username" style="flex:1; padding:8px; border-radius:4px; border:none;">
-                <button onclick="adminAction('upgrade')" style="padding:8px 15px;">Upgrade</button>
-            </div>
-        </div>
-
+        
         <div>
-            <div class="label" style="color:var(--danger);">RESET DEVICE (ANTI-SHARE)</div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="reset-user" placeholder="Username" style="flex:1; padding:8px; border-radius:4px; border:none;">
-                <button onclick="adminAction('resetDevice')" style="padding:8px 15px; background:var(--danger); color:#fff; border:none; font-weight:bold;">Reset</button>
+            <label>Hasil Generate (Format: Email|Password - Link)</label>
+            <textarea id="result-text" readonly placeholder="Akun akan muncul di sini..."></textarea>
+            
+            <!-- Tempat Link Otomatis Muncul -->
+            <div id="clickable-links" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+            <div class="btn-group">
+                <button class="secondary" onclick="copyResult()">📋 Copy TXT</button>
+                <button class="secondary" onclick="downloadResult()">💾 Download TXT</button>
             </div>
         </div>
     </div>
 
-    <div class="progress-bar"><span>Progress</span><span id="progress-text">0/0</span></div>
-    
-    <div class="terminal-header"><span>SSE TERMINAL LOG</span><span style="color:var(--accent); cursor:pointer;" onclick="document.getElementById('term-box').classList.toggle('hidden')">Tutup</span></div>
-    <div class="terminal-box" id="term-box">
-        <div class="term-top"><span>>_ LOG</span><span><span class="status-dot" id="status-dot"></span> <span id="status-text">IDLE</span></span></div>
-        <div class="term-logs" id="terminal"><div>// Menunggu perintah...</div></div>
-    </div>
-
-    <div id="result-area" class="hidden">
-        <div class="progress-bar" style="margin-top:20px; border-color:transparent;">
-            <span style="color:var(--success);">Hasil Generate</span>
-            <span style="color:var(--accent); cursor:pointer;" onclick="downloadTxt()">Download TXT</span>
+    <!-- ADMIN PANEL -->
+    <div id="admin-view" class="admin-box hidden">
+        <h3 class="admin-title">🛡️ Admin Control Panel</h3>
+        <div class="form-group">
+            <label>Nomor WA Admin (628...)</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="number" id="wa-number" placeholder="628xxx">
+                <button onclick="adminAction('setWa')" style="width:100px; margin-top:0;" class="secondary">Simpan</button>
+            </div>
         </div>
-        <div class="result-list" id="result-cards"></div>
-        <textarea id="result-raw" class="raw-result" readonly></textarea>
+        <div class="form-group">
+            <label>Upgrade User ke Premium</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="target-user" placeholder="Username target">
+                <button onclick="adminAction('upgrade')" style="width:100px; margin-top:0;" class="secondary">Upgrade</button>
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+            <label style="color:var(--danger);">Reset Device User (Anti-Share)</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="reset-user" placeholder="Username target">
+                <button onclick="adminAction('resetDevice')" style="width:100px; margin-top:0; background:var(--danger); color:#fff;">Reset</button>
+            </div>
+            <small style="color:var(--text-muted); font-size: 11px;">Gunakan jika user ganti HP / tidak bisa login.</small>
+        </div>
     </div>
 </div>
 
 <script>
-    let currentRole = null;
     let currentUser = null;
-    let sessionToken = null;
-    let deviceFingerprint = null; // Akan menyimpan HWID
+    let currentRole = null;
+    let waAdmin = "628123456789";
+    let deviceFingerprint = null;
 
-    // SCAN HARDWARE FINGERPRINT SAAT WEB DIBUKA
+    // Inisiasi FingerprintJS (Keamanan HWID)
     window.onload = function() {
         if (typeof FingerprintJS !== 'undefined') {
             FingerprintJS.load()
                 .then(fp => fp.get())
                 .then(result => {
                     deviceFingerprint = result.visitorId;
-                    console.log("Sistem Keamanan Aktif. HWID:", deviceFingerprint);
+                    console.log("Fingerprint Ready");
                 });
         }
     };
 
+    // Auto-init DB saat page load
     fetch('/api/db', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'init' }) });
-
-    function syncAmount(val) {
-        let num = parseInt(val);
-        if (isNaN(num) || num < 1) num = 1; if (num > 100) num = 100;
-        document.getElementById('amount-slider').value = num;
-        document.getElementById('amount-input').value = num;
-        document.getElementById('amount-val').innerText = num;
-    }
 
     async function reqApi(action, data = {}) {
         const res = await fetch('/api/db', {
@@ -234,146 +274,172 @@
         return await res.json();
     }
 
+    function showMsg(text, isError = false) {
+        const el = document.getElementById('auth-msg');
+        el.innerText = text;
+        el.style.color = isError ? 'var(--danger)' : 'var(--primary)';
+    }
+
     async function auth(action) {
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value.trim();
-        if (!u || !p) return document.getElementById('auth-msg').innerText = 'Isi username & password';
+        if (!u || !p) return showMsg('Harap isi username dan password!', true);
         
-        document.getElementById('auth-msg').innerText = 'Memvalidasi...';
+        showMsg('Memproses...');
         
-        // KIRIM DATA HWID BERSAMAAN SAAT LOGIN
-        const res = await reqApi(action, { 
-            username: u, 
-            password: p, 
-            fingerprint: deviceFingerprint 
-        });
+        // Kirim username, password, dan Fingerprint ID ke server
+        const res = await reqApi(action, { username: u, password: p, fingerprint: deviceFingerprint });
         
         if (res.error) {
-            document.getElementById('auth-msg').innerText = res.error;
+            showMsg(res.error, true);
         } else {
+            showMsg('');
             currentUser = u;
             currentRole = res.role;
-            sessionToken = res.token; // Simpan token di memori aplikasi
-            
-            document.getElementById('auth-box').classList.add('hidden');
-            document.getElementById('dashboard-box').classList.remove('hidden');
-            document.getElementById('role-text').innerText = currentRole.toUpperCase();
-            
-            if (currentRole === 'admin') {
-                document.getElementById('admin-view').classList.remove('hidden');
-            }
-            if (currentRole === 'user') {
-                alert('Akses Ditolak! Hubungi admin untuk upgrade Premium.');
-                logout();
-            }
+            loadDashboard();
+        }
+    }
+
+    async function loadDashboard() {
+        document.getElementById('auth-box').classList.add('hidden');
+        document.getElementById('dashboard-box').classList.remove('hidden');
+        document.getElementById('role-badge').innerText = currentRole.toUpperCase();
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        
+        const resWa = await reqApi('getWa');
+        if(resWa.wa) waAdmin = resWa.wa;
+
+        if (currentRole === 'user') {
+            document.getElementById('locked-view').classList.remove('hidden');
+            document.getElementById('tool-view').classList.add('hidden');
+        } else {
+            document.getElementById('locked-view').classList.add('hidden');
+            document.getElementById('tool-view').classList.remove('hidden');
+        }
+
+        if (currentRole === 'admin') {
+            document.getElementById('admin-view').classList.remove('hidden');
+            document.getElementById('wa-number').value = waAdmin;
+        } else {
+            document.getElementById('admin-view').classList.add('hidden');
         }
     }
 
     function logout() {
+        currentUser = null; currentRole = null;
         document.getElementById('auth-box').classList.remove('hidden');
         document.getElementById('dashboard-box').classList.add('hidden');
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-        document.getElementById('auth-msg').innerText = '';
-        sessionToken = null;
+        showMsg('');
     }
 
-    // Fungsi Admin 
+    function contactAdmin() {
+        window.open(`https://wa.me/${waAdmin}?text=Halo%20Admin,%20saya%20ingin%20upgrade%20akun%20Gen%20AM%20Tools.%20Username:%20${currentUser}`, '_blank');
+    }
+
     async function adminAction(action) {
-        const payload = { action, currentUser }; 
+        const payload = { action, currentUser };
         if (action === 'setWa') payload.waNumber = document.getElementById('wa-number').value;
         if (action === 'upgrade') payload.targetUser = document.getElementById('target-user').value;
         if (action === 'resetDevice') payload.targetUser = document.getElementById('reset-user').value;
         
         const res = await reqApi(action, payload);
         if(res.success) {
-            alert('Sukses!');
-            document.getElementById('target-user').value = '';
-            document.getElementById('reset-user').value = '';
-        } else alert('Gagal: ' + res.error);
+            alert('Aksi berhasil dieksekusi!');
+            if(action === 'upgrade') document.getElementById('target-user').value = '';
+            if(action === 'resetDevice') document.getElementById('reset-user').value = '';
+        } else {
+            alert('Gagal: ' + res.error);
+        }
     }
 
-    // --- LOGIKA GENERATE TETAP SAMA ---
     function logTerm(msg, type = 'normal') {
         const term = document.getElementById('terminal');
-        let c = ''; if (type === 'highlight') c = 'highlight'; if (type === 'success') c = 'success';
-        term.innerHTML += `<div class="${c}">${msg}</div>`; term.scrollTop = term.scrollHeight;
-    }
-
-    function setStatus(isActive, text) {
-        const dot = document.getElementById('status-dot');
-        const txt = document.getElementById('status-text');
-        if (isActive) { dot.classList.add('active'); txt.innerText = text || 'RUNNING'; txt.style.color = 'var(--accent)'; } 
-        else { dot.classList.remove('active'); txt.innerText = text || 'IDLE'; txt.style.color = 'var(--text-muted)'; }
+        const time = new Date().toLocaleTimeString('id-ID', { hour12: false });
+        let className = 'terminal-line';
+        if (type === 'error') className += ' error';
+        if (type === 'info') className += ' info';
+        
+        term.innerHTML += `<div class="${className}">[${time}] $ ${msg}</div>`;
+        term.scrollTop = term.scrollHeight;
     }
 
     function startGenerate() {
-        let amt = parseInt(document.getElementById('amount-input').value);
-        if (amt < 1) return;
-
-        document.getElementById('terminal').innerHTML = '';
-        document.getElementById('result-cards').innerHTML = '';
-        document.getElementById('result-raw').value = '';
-        document.getElementById('result-area').classList.add('hidden');
-        document.getElementById('progress-text').innerText = `0/${amt}`;
-        document.getElementById('btn-gen').disabled = true;
-        document.getElementById('btn-gen').innerText = `⏳ MEMPROSES...`;
+        let amt = parseInt(document.getElementById('amount').value);
+        if (isNaN(amt) || amt < 1 || amt > 50) return alert('Jumlah harus antara 1 - 50');
         
-        setStatus(true);
-        logTerm(`// Inisiasi generate ${amt} akun AM Premium via ManzzyID...`, 'highlight');
+        document.getElementById('result-text').value = '';
+        document.getElementById('clickable-links').innerHTML = ''; // Bersihkan link sebelumnya
+        document.getElementById('terminal').innerHTML = '';
+        document.getElementById('btn-gen').disabled = true;
+        document.getElementById('btn-gen').innerText = '⏳ Sedang Memproses...';
+        
+        logTerm(`Menginisiasi pembuatan ${amt} akun...`, 'info');
 
         const source = new EventSource(`/api/gen?amount=${amt}`);
-        let successCount = 0;
 
         source.onmessage = function(event) {
             try {
                 const data = JSON.parse(event.data);
+                
                 if (data.status === 'starting') {
-                    logTerm(`> ${data.message}`);
+                    logTerm(`Mulai: ${data.message}`, 'info');
                 } else if (data.type === 'success') {
-                    successCount++;
-                    document.getElementById('progress-text').innerText = `${successCount}/${amt}`;
-                    logTerm(`> [SUCCESS] ${data.message}`, 'success');
+                    logTerm(`BERHASIL (${data.progress}): ${data.message}`);
                     
-                    const rawAccount = data.account; 
+                    // Ambil email dari raw account (email|PREMIUM)
+                    const rawAccount = data.account;
                     const emailOnly = rawAccount.split('|')[0];
                     const magicLink = `https://generator.email/${emailOnly}`;
                     
-                    document.getElementById('result-area').classList.remove('hidden');
-                    document.getElementById('result-raw').value += `${rawAccount} - Link: ${magicLink}\n`;
-                    document.getElementById('result-cards').innerHTML += `
-                        <div class="result-item">
-                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">${emailOnly}</div>
-                            <a href="${magicLink}" target="_blank" class="btn-link">Buka Email</a>
+                    // 1. Masukkan ke Textarea dengan Link
+                    document.getElementById('result-text').value += `${rawAccount} - Link: ${magicLink}\n`;
+                    
+                    // 2. Buat Kotak Tombol Klik Langsung
+                    document.getElementById('clickable-links').innerHTML += `
+                        <div class="link-box">
+                            <span style="font-family: monospace; font-size: 13px;">${emailOnly}</span>
+                            <a href="${magicLink}" target="_blank">Buka Email</a>
                         </div>
                     `;
+
                 } else if (data.type === 'done') {
-                    logTerm(`// Selesai. Total sukses: ${data.success}`, 'highlight');
+                    logTerm(`[DONE] Total: ${data.total} | Sukses: ${data.success} | Gagal: ${data.failed}`, 'info');
                     closeStream(source);
                 }
             } catch (e) {
-                if(event.data && event.data.trim() !== '') logTerm(`> Stream data diterima...`);
+                if(event.data && event.data.trim() !== '') logTerm(`Received data chunk...`);
             }
         };
 
         source.onerror = function() {
-            logTerm('> Koneksi stream berakhir.', 'highlight');
+            logTerm('Koneksi stream terputus/selesai.', 'error');
             closeStream(source);
         };
     }
 
     function closeStream(source) {
-        source.close(); setStatus(false);
+        source.close();
         document.getElementById('btn-gen').disabled = false;
-        document.getElementById('btn-gen').innerText = `⚡ GENERATE`;
+        document.getElementById('btn-gen').innerText = '⚡ Mulai Generate';
     }
 
-    function downloadTxt() {
-        const txt = document.getElementById('result-raw').value;
-        if (!txt) return;
+    function copyResult() {
+        const txt = document.getElementById('result-text').value;
+        if (!txt) return alert('Belum ada hasil');
+        navigator.clipboard.writeText(txt);
+        alert('Disalin ke clipboard!');
+    }
+
+    function downloadResult() {
+        const txt = document.getElementById('result-text').value;
+        if (!txt) return alert('Belum ada hasil');
         const blob = new Blob([txt], { type: 'text/plain' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-        a.download = `AM_ManzzyID_${Date.now()}.txt`; a.click();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `AM_Premium_${Date.now()}.txt`;
+        a.click();
     }
 </script>
 </body>
