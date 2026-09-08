@@ -3,299 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gen AM Tools</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <title>Gen AM Tools - Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     
-    <!-- Library FingerprintJS (HWID Scanner) -->
+    <!-- FingerprintJS untuk Anti-Share -->
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
 
     <style>
         :root {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --surface-hover: #334155;
-            --primary: #10b981;
-            --primary-hover: #059669;
-            --danger: #ef4444;
+            --bg-body: #050505;
+            --bg-surface: rgba(20, 20, 25, 0.7);
+            --bg-card: rgba(30, 30, 35, 0.6);
+            --primary: #4facfe;
+            --primary-hover: #00f2fe;
+            --accent: #00f2fe;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border: #334155;
+            --border: rgba(255, 255, 255, 0.1);
+            --danger: #ff4b4b;
+            --success: #00e676;
         }
 
+        * { box-sizing: border-box; }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-body) radial-gradient(circle at 50% -20%, #1a1a2e, #050505) no-repeat;
             color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; min-height: 100vh;
         }
 
         .container {
-            background: var(--surface);
-            width: 100%;
-            max-width: 600px;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border: 1px solid var(--border);
-            animation: fadeIn 0.4s ease-out;
+            width: 100%; max-width: 550px;
+            margin-top: 20px;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .hidden { display: none !important; }
 
-        h2 {
-            text-align: center;
-            margin-top: 0;
-            font-weight: 600;
-            color: var(--primary);
-            letter-spacing: 1px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-
-        .form-group { margin-bottom: 15px; }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        input[type="text"], input[type="password"], input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
+        /* GLASSMORPHISM BOX */
+        .glass-box {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text-main);
-            font-size: 15px;
-            box-sizing: border-box;
-            transition: all 0.3s;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); }
+        .title { text-align: center; font-size: 22px; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 25px 0; }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background: var(--primary);
-            color: #fff;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 10px;
-        }
-
-        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        button:active { transform: translateY(1px); }
-        button:disabled { background: var(--surface-hover); cursor: not-allowed; color: var(--text-muted); }
+        /* INPUTS & BUTTONS */
+        .input-group { margin-bottom: 18px; }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-control { width: 100%; padding: 14px 16px; border-radius: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text-main); font-size: 15px; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
+        .input-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.15); }
         
-        button.secondary { background: var(--surface-hover); color: var(--text-main); }
-        button.secondary:hover { background: var(--border); }
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #000; box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { background: #333; color: #777; box-shadow: none; cursor: not-allowed; transform: none; }
         
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); margin-top: 10px; }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); }
 
-        .badge {
-            background: rgba(16, 185, 129, 0.1); color: var(--primary); padding: 5px 10px;
-            border-radius: 6px; font-size: 12px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.2);
-        }
+        /* TABS */
+        .tabs { display: flex; background: rgba(0,0,0,0.4); border-radius: 14px; padding: 6px; margin-bottom: 25px; border: 1px solid var(--border); }
+        .tab-btn { flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); }
 
-        /* Terminal UI */
-        .terminal-container { background: #000; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; overflow: hidden; }
-        .terminal-header { background: #1e1e1e; padding: 8px 12px; font-size: 12px; color: #888; display: flex; gap: 6px; align-items: center; border-bottom: 1px solid #333; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .dot.r { background: #ff5f56; } .dot.y { background: #ffbd2e; } .dot.g { background: #27c93f; }
+        /* NOTICES */
+        .notice-box { background: rgba(255, 171, 0, 0.1); border-left: 4px solid #ffab00; padding: 12px 15px; border-radius: 8px; font-size: 13px; color: #ffca28; margin-bottom: 20px; line-height: 1.5; }
 
-        .terminal { font-family: 'JetBrains Mono', monospace; color: #00ff00; padding: 12px; height: 180px; overflow-y: auto; font-size: 13px; line-height: 1.5; }
-        .terminal-line { margin: 2px 0; word-break: break-all; }
-        .terminal-line.error { color: var(--danger); }
-        .terminal-line.info { color: #00d2ff; }
-
-        /* Textarea Result */
-        textarea {
-            width: 100%; height: 120px; background: var(--bg); color: var(--primary);
-            border: 1px solid var(--border); padding: 12px; border-radius: 8px; box-sizing: border-box;
-            resize: vertical; font-family: 'JetBrains Mono', monospace; font-size: 13px;
-        }
-
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        /* MODERN PROGRESS BAR */
+        .progress-container { margin: 25px 0; text-align: center; }
+        .progress-text { font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; }
+        .progress-text.active-status { color: var(--primary); animation: pulse 1.5s infinite; }
+        .progress-track { width: 100%; height: 8px; background: rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), #00f2fe); border-radius: 10px; transition: width 0.4s ease; }
         
-        /* Admin Box */
-        .admin-box { margin-top: 30px; padding: 20px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); border-radius: 8px; }
-        .admin-title { margin-top: 0; font-size: 16px; color: #eab308; display: flex; align-items: center; gap: 8px;}
-        .msg-box { text-align: center; margin-top: 15px; font-size: 14px; min-height: 20px; }
+        @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
 
-        /* Clickable Link Box */
-        .link-box { background: var(--bg); padding: 10px; border-radius: 8px; border: 1px dashed var(--primary); margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .link-box a { color: var(--primary); text-decoration: none; font-weight: bold; border: 1px solid var(--primary); padding: 5px 10px; border-radius: 4px; font-size: 12px; }
-        .link-box a:hover { background: var(--primary); color: #000; }
+        /* RESULT CARDS (1 by 1) */
+        .results-grid { display: grid; gap: 12px; margin-top: 15px; }
+        .result-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; animation: slideUp 0.3s ease; transition: 0.2s; }
+        .result-card:hover { border-color: rgba(79, 172, 254, 0.3); background: rgba(79, 172, 254, 0.05); }
+        .result-info { display: flex; flex-direction: column; gap: 4px; }
+        .result-email { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: var(--text-main); }
+        .result-badge { font-size: 10px; background: rgba(0, 230, 118, 0.15); color: var(--success); padding: 3px 8px; border-radius: 20px; font-weight: 700; display: inline-block; width: max-content; }
+        
+        .btn-sm { background: rgba(79, 172, 254, 0.1); color: var(--primary); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: 0.2s; border: 1px solid rgba(79, 172, 254, 0.2); cursor: pointer; }
+        .btn-sm:hover { background: var(--primary); color: #000; }
+
+        /* TEXTAREA HIDDEN & ACTIONS */
+        textarea.raw-txt { display: none; } /* Hanya untuk nyimpen data txt */
+        .action-group { display: flex; gap: 10px; margin-top: 20px; }
+
+        /* HEADER DASHBOARD */
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .dash-header h2 { margin: 0; font-size: 20px; }
+        .user-badge { font-size: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .user-badge:hover { background: rgba(255, 75, 75, 0.1); color: var(--danger); border-color: rgba(255, 75, 75, 0.3); }
+
+        /* ADMIN PANEL */
+        .admin-panel { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); }
+        .admin-title { font-size: 14px; color: #ffca28; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .flex-input { display: flex; gap: 10px; }
     </style>
 </head>
 <body>
 
-<!-- WIDGET LOGIN / REGISTER -->
+<!-- WIDGET LOGIN -->
 <div class="container" id="auth-box">
-    <h2>GEN AM TOOLS</h2>
-    <div class="form-group">
-        <label>Username</label>
-        <input type="text" id="username" placeholder="Masukkan username">
+    <div class="glass-box">
+        <h1 class="title">AM TOOLS PREMIUM</h1>
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="username" class="input-control" placeholder="Masukkan username">
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="password" class="input-control" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" onclick="auth('login')" id="btn-login">Masuk Dashboard</button>
+        <button class="btn btn-outline" onclick="auth('register')">Buat Akun Baru</button>
+        <div id="auth-msg" style="text-align:center; margin-top:15px; font-size:13px; font-weight:600;"></div>
     </div>
-    <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="••••••••">
-    </div>
-    <button onclick="auth('login')">Login to Dashboard</button>
-    <button class="secondary" onclick="auth('register')">Daftar Akun Baru</button>
-    <div class="msg-box" id="auth-msg"></div>
 </div>
 
 <!-- WIDGET DASHBOARD -->
 <div class="container hidden" id="dashboard-box">
-    <div class="header-bar">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <h2 style="margin:0; border:none; padding:0;">DASHBOARD</h2>
-            <span class="badge" id="role-badge"></span>
-        </div>
-        <button class="secondary" onclick="logout()" style="width: auto; padding: 6px 12px; margin: 0; font-size: 13px;">Logout</button>
-    </div>
-    
-    <!-- LOCKED VIEW (Untuk User Biasa) -->
-    <div id="locked-view" class="hidden" style="text-align: center; padding: 40px 20px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px dashed var(--danger);">
-        <h3 style="margin-top:0; color:var(--danger);">Akses Premium Dibutuhkan</h3>
-        <p style="color:var(--text-muted); font-size: 14px; margin-bottom:20px;">Role Anda saat ini adalah <b>User</b>. Anda tidak dapat menggunakan tool Generator ini.</p>
-        <button onclick="contactAdmin()" style="width:auto; padding: 10px 24px; background: #25D366; color:#fff;">Upgrade via WhatsApp Admin</button>
-    </div>
-
-    <!-- TOOL VIEW (Untuk Premium / Admin) -->
-    <div id="tool-view" class="hidden">
-        <div class="form-group">
-            <label>Jumlah Generate (Max 50)</label>
-            <input type="number" id="amount" min="1" max="50" value="1">
-        </div>
-        <button onclick="startGenerate()" id="btn-gen">⚡ Mulai Generate</button>
+    <div class="glass-box">
         
-        <div style="margin-top: 25px;">
-            <label>Terminal Logs</label>
-            <div class="terminal-container">
-                <div class="terminal-header">
-                    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-                    <span style="margin-left: 10px;">root@gen-am:~#</span>
-                </div>
-                <div class="terminal" id="terminal">
-                    <div class="terminal-line info">Waiting for command...</div>
-                </div>
+        <div class="dash-header">
+            <h2 class="title" style="margin:0;">Dashboard</h2>
+            <div class="user-badge" onclick="logout()" title="Klik untuk Logout">
+                <span id="role-text">ADMIN</span>
             </div>
         </div>
-        
-        <div>
-            <label>Hasil Generate (Format: Email|Password - Link)</label>
-            <textarea id="result-text" readonly placeholder="Akun akan muncul di sini..."></textarea>
+
+        <!-- LOCKED VIEW (Untuk User Biasa) -->
+        <div id="locked-view" class="hidden" style="text-align: center; padding: 30px 0;">
+            <div style="font-size: 40px; margin-bottom: 15px;">🔒</div>
+            <h3 style="margin:0 0 10px 0; color:var(--danger);">Akses Dibatasi</h3>
+            <p style="color:var(--text-muted); font-size: 14px; margin-bottom: 25px;">Akun Anda belum memiliki lisensi Premium untuk menggunakan generator ini.</p>
+            <button class="btn btn-primary" onclick="contactAdmin()">Upgrade ke Premium</button>
+        </div>
+
+        <!-- TOOL VIEW (Premium / Admin) -->
+        <div id="tool-view" class="hidden">
             
-            <!-- Tempat Link Otomatis Muncul -->
-            <div id="clickable-links" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            <div class="notice-box">
+                <b>💡 Info:</b> Jika Tools Bulk sedang tidak berfungsi atau mengalami delay, silahkan gunakan mode <b>Verifikasi Manual</b> ya.
+            </div>
 
-            <div class="btn-group">
-                <button class="secondary" onclick="copyResult()">📋 Copy TXT</button>
-                <button class="secondary" onclick="downloadResult()">💾 Download TXT</button>
+            <!-- TABS -->
+            <div class="tabs">
+                <div class="tab-btn active" id="tab-bulk" onclick="switchTab('bulk')">Auto Bulk Gen</div>
+                <div class="tab-btn" id="tab-manual" onclick="switchTab('manual')">Verifikasi Manual</div>
             </div>
-        </div>
-    </div>
 
-    <!-- ADMIN PANEL -->
-    <div id="admin-view" class="admin-box hidden">
-        <h3 class="admin-title">🛡️ Admin Control Panel</h3>
-        <div class="form-group">
-            <label>Nomor WA Admin (628...)</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="number" id="wa-number" placeholder="628xxx">
-                <button onclick="adminAction('setWa')" style="width:100px; margin-top:0;" class="secondary">Simpan</button>
+            <!-- TAB 1: BULK GENERATOR -->
+            <div id="section-bulk">
+                <div class="input-group">
+                    <label>Jumlah Generate (Max 50)</label>
+                    <input type="number" id="amount" class="input-control" min="1" max="50" value="1">
+                </div>
+                <button class="btn btn-primary" id="btn-gen" onclick="startGenerate()">⚡ Mulai Generate Auto</button>
+
+                <!-- Modern Progress Area -->
+                <div id="progress-area" class="progress-container hidden">
+                    <div class="progress-text" id="progress-status">Menyiapkan sistem...</div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Result Cards Area -->
+                <div id="results-container" class="hidden">
+                    <div class="results-grid" id="result-cards">
+                        <!-- Hasil kartu akan muncul di sini via JS -->
+                    </div>
+                    
+                    <textarea id="result-raw" class="raw-txt"></textarea>
+                    
+                    <div class="action-group">
+                        <button class="btn btn-outline" onclick="downloadTxt()">💾 Download Semua (TXT)</button>
+                        <button class="btn btn-outline" onclick="copyResult()">📋 Copy (TXT)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: MANUAL VERIFICATION -->
+            <div id="section-manual" class="hidden">
+                <div class="input-group">
+                    <label>Langkah 1: Masukkan Email (Belum Premium)</label>
+                    <input type="email" id="manual-email" class="input-control" placeholder="contoh@gmail.com">
+                </div>
+                <button class="btn btn-primary" id="btn-send-link" onclick="sendMagicLink()" style="margin-bottom: 25px;">Kirim Magic Link</button>
+
+                <div class="input-group">
+                    <label>Langkah 2: Tempel Magic Link dari Inbox</label>
+                    <input type="text" id="manual-link" class="input-control" placeholder="https://alight-creative.firebaseapp.com/...">
+                </div>
+                <button class="btn btn-primary" id="btn-verif-link" onclick="verifyPremium()">✅ Verifikasi Premium</button>
+                
+                <div id="manual-msg" style="margin-top: 15px; font-size: 13px; font-weight: 600; text-align: center;"></div>
+            </div>
+
+        </div>
+
+        <!-- ADMIN PANEL (Tersembunyi buat user) -->
+        <div id="admin-view" class="admin-panel hidden">
+            <div class="admin-title">Panel Admin (Keamanan & WA)</div>
+            
+            <div class="input-group">
+                <label>Nomor WA Admin</label>
+                <div class="flex-input">
+                    <input type="number" id="wa-number" class="input-control">
+                    <button class="btn btn-outline" style="width:auto; margin:0;" onclick="adminAction('setWa')">Save</button>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>Upgrade Username</label>
+                <div class="flex-input">
+                    <input type="text" id="target-user" class="input-control" placeholder="Username">
+                    <button class="btn btn-outline" style="width:auto; margin:0;" onclick="adminAction('upgrade')">Upgrade</button>
+                </div>
+            </div>
+            
+            <div class="input-group" style="margin-bottom:0;">
+                <label style="color: var(--danger);">Reset Device (Buka Blokir HP)</label>
+                <div class="flex-input">
+                    <input type="text" id="reset-user" class="input-control" placeholder="Username">
+                    <button class="btn btn-primary" style="width:auto; margin:0; background:var(--danger); box-shadow:none;" onclick="adminAction('resetDevice')">Reset</button>
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <label>Upgrade User ke Premium</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="target-user" placeholder="Username target">
-                <button onclick="adminAction('upgrade')" style="width:100px; margin-top:0;" class="secondary">Upgrade</button>
-            </div>
-        </div>
-        <div class="form-group" style="margin-bottom:0;">
-            <label style="color:var(--danger);">Reset Device User (Anti-Share)</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="reset-user" placeholder="Username target">
-                <button onclick="adminAction('resetDevice')" style="width:100px; margin-top:0; background:var(--danger); color:#fff;">Reset</button>
-            </div>
-            <small style="color:var(--text-muted); font-size: 11px;">Gunakan jika user ganti HP / tidak bisa login.</small>
-        </div>
+
     </div>
 </div>
 
 <script>
-    let currentUser = null;
     let currentRole = null;
+    let currentUser = null;
     let waAdmin = "628123456789";
     let deviceFingerprint = null;
 
-    // Inisiasi FingerprintJS (Keamanan HWID)
+    // INIT FINGERPRINT JS
     window.onload = function() {
         if (typeof FingerprintJS !== 'undefined') {
             FingerprintJS.load()
                 .then(fp => fp.get())
-                .then(result => {
-                    deviceFingerprint = result.visitorId;
-                    console.log("Fingerprint Ready");
-                });
+                .then(result => { deviceFingerprint = result.visitorId; });
         }
     };
 
-    // Auto-init DB saat page load
+    // Auto-init DB
     fetch('/api/db', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'init' }) });
 
     async function reqApi(action, data = {}) {
-        const res = await fetch('/api/db', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action, ...data })
-        });
+        const res = await fetch('/api/db', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ...data }) });
         return await res.json();
     }
 
-    function showMsg(text, isError = false) {
-        const el = document.getElementById('auth-msg');
+    function showMsg(id, text, isError = false) {
+        const el = document.getElementById(id);
         el.innerText = text;
-        el.style.color = isError ? 'var(--danger)' : 'var(--primary)';
+        el.style.color = isError ? 'var(--danger)' : 'var(--success)';
     }
 
+    // AUTH SYSTEM
     async function auth(action) {
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value.trim();
-        if (!u || !p) return showMsg('Harap isi username dan password!', true);
+        if (!u || !p) return showMsg('auth-msg', 'Harap isi username dan password!', true);
         
-        showMsg('Memproses...');
+        document.getElementById('btn-login').disabled = true;
+        document.getElementById('btn-login').innerText = 'Memvalidasi Keamanan...';
         
-        // Kirim username, password, dan Fingerprint ID ke server
         const res = await reqApi(action, { username: u, password: p, fingerprint: deviceFingerprint });
         
+        document.getElementById('btn-login').disabled = false;
+        document.getElementById('btn-login').innerText = 'Masuk Dashboard';
+
         if (res.error) {
-            showMsg(res.error, true);
+            showMsg('auth-msg', res.error, true);
         } else {
-            showMsg('');
-            currentUser = u;
-            currentRole = res.role;
+            currentUser = u; currentRole = res.role;
             loadDashboard();
         }
     }
@@ -303,9 +307,7 @@
     async function loadDashboard() {
         document.getElementById('auth-box').classList.add('hidden');
         document.getElementById('dashboard-box').classList.remove('hidden');
-        document.getElementById('role-badge').innerText = currentRole.toUpperCase();
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
+        document.getElementById('role-text').innerText = currentRole.toUpperCase();
         
         const resWa = await reqApi('getWa');
         if(resWa.wa) waAdmin = resWa.wa;
@@ -330,13 +332,193 @@
         currentUser = null; currentRole = null;
         document.getElementById('auth-box').classList.remove('hidden');
         document.getElementById('dashboard-box').classList.add('hidden');
-        showMsg('');
+        document.getElementById('password').value = '';
+        showMsg('auth-msg', '');
     }
 
     function contactAdmin() {
         window.open(`https://wa.me/${waAdmin}?text=Halo%20Admin,%20saya%20ingin%20upgrade%20akun%20Gen%20AM%20Tools.%20Username:%20${currentUser}`, '_blank');
     }
 
+    // TABS SWITCHER
+    function switchTab(tabName) {
+        document.getElementById('tab-bulk').classList.remove('active');
+        document.getElementById('tab-manual').classList.remove('active');
+        document.getElementById('section-bulk').classList.add('hidden');
+        document.getElementById('section-manual').classList.add('hidden');
+        
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+        document.getElementById(`section-${tabName}`).classList.remove('hidden');
+    }
+
+    // SENSOR NAMA
+    function cleanText(txt) {
+        if (!txt) return '';
+        return txt.replace(/jerexd/gi, 'Sistem').replace(/JEREXD/g, 'ORDER');
+    }
+
+    // --- FITUR 1: AUTO BULK GENERATOR ---
+    function startGenerate() {
+        let amt = parseInt(document.getElementById('amount').value);
+        if (isNaN(amt) || amt < 1 || amt > 50) return alert('Jumlah maks 50');
+        
+        // Reset UI
+        document.getElementById('result-cards').innerHTML = '';
+        document.getElementById('result-raw').value = '';
+        document.getElementById('results-container').classList.add('hidden');
+        
+        const btnGen = document.getElementById('btn-gen');
+        btnGen.disabled = true;
+        btnGen.innerText = '⏳ Sedang Memproses...';
+        
+        const progArea = document.getElementById('progress-area');
+        const progBar = document.getElementById('progress-bar');
+        const progStatus = document.getElementById('progress-status');
+        
+        progArea.classList.remove('hidden');
+        progStatus.classList.add('active-status');
+        progStatus.innerText = 'Menghubungkan ke server...';
+        progBar.style.width = '5%';
+
+        const source = new EventSource(`/api/gen?amount=${amt}`);
+        let successCount = 0;
+
+        source.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                
+                if (data.status === 'starting') {
+                    progStatus.innerText = cleanText(data.message);
+                    progBar.style.width = '15%';
+                } else if (data.type === 'success') {
+                    successCount++;
+                    // Kalkulasi progress bar
+                    let percent = 15 + ((successCount / amt) * 85);
+                    progBar.style.width = `${percent}%`;
+                    progStatus.innerText = `Memproses akun ke-${successCount} dari ${amt}...`;
+                    
+                    const rawAccount = data.account;
+                    const emailOnly = rawAccount.split('|')[0];
+                    const magicLink = `https://generator.email/${emailOnly}`;
+                    
+                    // Nampilin Area Hasil
+                    document.getElementById('results-container').classList.remove('hidden');
+                    
+                    // Simpan ke Raw TXT
+                    document.getElementById('result-raw').value += `${rawAccount} - Link: ${magicLink}\n`;
+                    
+                    // Tambah Element Kartu 1 per 1 (Modern Look)
+                    const card = document.createElement('div');
+                    card.className = 'result-card';
+                    card.innerHTML = `
+                        <div class="result-info">
+                            <span class="result-email">${emailOnly}</span>
+                            <span class="result-badge">Premium Aktif</span>
+                        </div>
+                        <a href="${magicLink}" target="_blank" class="btn-sm">Buka Inbox</a>
+                    `;
+                    document.getElementById('result-cards').appendChild(card);
+
+                } else if (data.type === 'done') {
+                    progStatus.classList.remove('active-status');
+                    progStatus.style.color = 'var(--success)';
+                    progStatus.innerText = `Selesai! Berhasil membuat ${data.success} akun.`;
+                    progBar.style.width = '100%';
+                    closeStream(source);
+                }
+            } catch (e) {
+                // Ignore keep-alive
+            }
+        };
+
+        source.onerror = function() {
+            progStatus.classList.remove('active-status');
+            progStatus.style.color = 'var(--danger)';
+            progStatus.innerText = 'Koneksi terputus.';
+            closeStream(source);
+        };
+    }
+
+    function closeStream(source) {
+        source.close();
+        const btnGen = document.getElementById('btn-gen');
+        btnGen.disabled = false;
+        btnGen.innerText = '⚡ Mulai Generate Auto';
+    }
+
+    function downloadTxt() {
+        const txt = document.getElementById('result-raw').value;
+        if (!txt) return;
+        const blob = new Blob([txt], { type: 'text/plain' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `AM_Premium_${Date.now()}.txt`; a.click();
+    }
+    
+    function copyResult() {
+        const txt = document.getElementById('result-raw').value;
+        if (!txt) return;
+        navigator.clipboard.writeText(txt);
+        alert('Berhasil disalin ke clipboard!');
+    }
+
+    // --- FITUR 2: MANUAL VERIFICATION ---
+    async function sendMagicLink() {
+        const email = document.getElementById('manual-email').value.trim();
+        if(!email) return showMsg('manual-msg', 'Isi email dulu bos!', true);
+        
+        const btn = document.getElementById('btn-send-link');
+        btn.disabled = true; btn.innerText = 'Mengirim...';
+        showMsg('manual-msg', '');
+
+        try {
+            const res = await fetch('/api/manual', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'send', email: email })
+            });
+            const data = await res.json();
+            
+            if(data.status) {
+                showMsg('manual-msg', cleanText(data.message));
+                // Auto copy domain to clipboard helper if they use generator.email
+                if(email.includes('@')) {
+                    window.open(`https://generator.email/${email}`, '_blank');
+                }
+            } else {
+                showMsg('manual-msg', cleanText(data.message || 'Gagal mengirim link.'), true);
+            }
+        } catch (e) { showMsg('manual-msg', 'Error koneksi ke server', true); }
+        
+        btn.disabled = false; btn.innerText = 'Kirim Magic Link';
+    }
+
+    async function verifyPremium() {
+        const email = document.getElementById('manual-email').value.trim();
+        const link = document.getElementById('manual-link').value.trim();
+        if(!email || !link) return showMsg('manual-msg', 'Isi Email & Magic Link terlebih dahulu!', true);
+        
+        const btn = document.getElementById('btn-verif-link');
+        btn.disabled = true; btn.innerText = 'Memverifikasi...';
+        showMsg('manual-msg', 'Sedang menembak server Alight Motion...');
+
+        try {
+            const res = await fetch('/api/manual', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'verif', email: email, link: link })
+            });
+            const data = await res.json();
+            
+            if(data.status) {
+                showMsg('manual-msg', cleanText(data.message));
+                document.getElementById('manual-link').value = ''; // Reset input
+            } else {
+                showMsg('manual-msg', cleanText(data.message || 'Gagal verifikasi link.'), true);
+            }
+        } catch (e) { showMsg('manual-msg', 'Error koneksi ke server', true); }
+        
+        btn.disabled = false; btn.innerText = '✅ Verifikasi Premium';
+    }
+
+    // --- ADMIN ACTIONS ---
     async function adminAction(action) {
         const payload = { action, currentUser };
         if (action === 'setWa') payload.waNumber = document.getElementById('wa-number').value;
@@ -345,101 +527,10 @@
         
         const res = await reqApi(action, payload);
         if(res.success) {
-            alert('Aksi berhasil dieksekusi!');
-            if(action === 'upgrade') document.getElementById('target-user').value = '';
-            if(action === 'resetDevice') document.getElementById('reset-user').value = '';
-        } else {
-            alert('Gagal: ' + res.error);
-        }
-    }
-
-    function logTerm(msg, type = 'normal') {
-        const term = document.getElementById('terminal');
-        const time = new Date().toLocaleTimeString('id-ID', { hour12: false });
-        let className = 'terminal-line';
-        if (type === 'error') className += ' error';
-        if (type === 'info') className += ' info';
-        
-        term.innerHTML += `<div class="${className}">[${time}] $ ${msg}</div>`;
-        term.scrollTop = term.scrollHeight;
-    }
-
-    function startGenerate() {
-        let amt = parseInt(document.getElementById('amount').value);
-        if (isNaN(amt) || amt < 1 || amt > 50) return alert('Jumlah harus antara 1 - 50');
-        
-        document.getElementById('result-text').value = '';
-        document.getElementById('clickable-links').innerHTML = ''; // Bersihkan link sebelumnya
-        document.getElementById('terminal').innerHTML = '';
-        document.getElementById('btn-gen').disabled = true;
-        document.getElementById('btn-gen').innerText = '⏳ Sedang Memproses...';
-        
-        logTerm(`Menginisiasi pembuatan ${amt} akun...`, 'info');
-
-        const source = new EventSource(`/api/gen?amount=${amt}`);
-
-        source.onmessage = function(event) {
-            try {
-                const data = JSON.parse(event.data);
-                
-                if (data.status === 'starting') {
-                    logTerm(`Mulai: ${data.message}`, 'info');
-                } else if (data.type === 'success') {
-                    logTerm(`BERHASIL (${data.progress}): ${data.message}`);
-                    
-                    // Ambil email dari raw account (email|PREMIUM)
-                    const rawAccount = data.account;
-                    const emailOnly = rawAccount.split('|')[0];
-                    const magicLink = `https://generator.email/${emailOnly}`;
-                    
-                    // 1. Masukkan ke Textarea dengan Link
-                    document.getElementById('result-text').value += `${rawAccount} - Link: ${magicLink}\n`;
-                    
-                    // 2. Buat Kotak Tombol Klik Langsung
-                    document.getElementById('clickable-links').innerHTML += `
-                        <div class="link-box">
-                            <span style="font-family: monospace; font-size: 13px;">${emailOnly}</span>
-                            <a href="${magicLink}" target="_blank">Buka Email</a>
-                        </div>
-                    `;
-
-                } else if (data.type === 'done') {
-                    logTerm(`[DONE] Total: ${data.total} | Sukses: ${data.success} | Gagal: ${data.failed}`, 'info');
-                    closeStream(source);
-                }
-            } catch (e) {
-                if(event.data && event.data.trim() !== '') logTerm(`Received data chunk...`);
-            }
-        };
-
-        source.onerror = function() {
-            logTerm('Koneksi stream terputus/selesai.', 'error');
-            closeStream(source);
-        };
-    }
-
-    function closeStream(source) {
-        source.close();
-        document.getElementById('btn-gen').disabled = false;
-        document.getElementById('btn-gen').innerText = '⚡ Mulai Generate';
-    }
-
-    function copyResult() {
-        const txt = document.getElementById('result-text').value;
-        if (!txt) return alert('Belum ada hasil');
-        navigator.clipboard.writeText(txt);
-        alert('Disalin ke clipboard!');
-    }
-
-    function downloadResult() {
-        const txt = document.getElementById('result-text').value;
-        if (!txt) return alert('Belum ada hasil');
-        const blob = new Blob([txt], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `AM_Premium_${Date.now()}.txt`;
-        a.click();
+            alert('Sukses dieksekusi!');
+            document.getElementById('target-user').value = '';
+            document.getElementById('reset-user').value = '';
+        } else alert('Gagal: ' + res.error);
     }
 </script>
 </body>
