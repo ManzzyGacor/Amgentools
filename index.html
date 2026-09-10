@@ -6,7 +6,6 @@
     <title>Gen AM Tools - Premium</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     
-    <!-- FingerprintJS untuk Anti-Share -->
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
 
     <style>
@@ -22,42 +21,17 @@
             --border: rgba(255, 255, 255, 0.1);
             --danger: #ff4b4b;
             --success: #00e676;
+            --warning: #ffca28;
         }
 
         * { box-sizing: border-box; }
-        
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg-body) radial-gradient(circle at 50% -20%, #1a1a2e, #050505) no-repeat;
-            color: var(--text-main);
-            margin: 0; padding: 20px;
-            display: flex; justify-content: center; min-height: 100vh;
-        }
-
-        .container {
-            width: 100%; max-width: 550px;
-            margin-top: 20px;
-            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body) radial-gradient(circle at 50% -20%, #1a1a2e, #050505) no-repeat; color: var(--text-main); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 550px; margin-top: 20px; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none !important; }
 
         /* GLASSMORPHISM BOX */
-        .glass-box {
-            background: var(--bg-surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-
+        .glass-box { background: var(--bg-surface); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .title { text-align: center; font-size: 22px; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 25px 0; }
 
         /* INPUTS & BUTTONS */
@@ -65,23 +39,26 @@
         .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         .input-control { width: 100%; padding: 14px 16px; border-radius: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text-main); font-size: 15px; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
         .input-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.15); }
+        textarea.input-control { resize: vertical; min-height: 100px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.5; color: var(--text-muted); }
         
         .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; justify-content: center; align-items: center; gap: 8px; }
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #000; box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4); }
         .btn-primary:active { transform: translateY(0); }
         .btn-primary:disabled { background: #333; color: #777; box-shadow: none; cursor: not-allowed; transform: none; }
-        
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); margin-top: 10px; }
         .btn-outline:hover { background: rgba(255,255,255,0.05); }
+        .btn-sm { font-size: 12px; padding: 10px 15px; }
 
-        /* TABS */
+        /* TABS (3 Kolom) */
         .tabs { display: flex; background: rgba(0,0,0,0.4); border-radius: 14px; padding: 6px; margin-bottom: 25px; border: 1px solid var(--border); }
-        .tab-btn { flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
+        .tab-btn { flex: 1; text-align: center; padding: 10px 5px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
         .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); }
 
-        /* NOTICES */
-        .notice-box { background: rgba(255, 171, 0, 0.1); border-left: 4px solid #ffab00; padding: 12px 15px; border-radius: 8px; font-size: 13px; color: #ffca28; margin-bottom: 20px; line-height: 1.5; }
+        /* NOTICES & VIDEO */
+        .notice-box { background: rgba(255, 171, 0, 0.1); border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 8px; font-size: 13px; color: var(--warning); margin-bottom: 20px; line-height: 1.5; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; /* 16:9 */ height: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
         /* MODERN PROGRESS BAR */
         .progress-container { margin: 25px 0; text-align: center; }
@@ -89,34 +66,28 @@
         .progress-text.active-status { color: var(--primary); animation: pulse 1.5s infinite; }
         .progress-track { width: 100%; height: 8px; background: rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
         .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), #00f2fe); border-radius: 10px; transition: width 0.4s ease; }
-        
         @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
 
-        /* RESULT CARDS (1 by 1) */
+        /* RESULT CARDS */
         .results-grid { display: grid; gap: 12px; margin-top: 15px; }
         .result-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; animation: slideUp 0.3s ease; transition: 0.2s; }
-        .result-card:hover { border-color: rgba(79, 172, 254, 0.3); background: rgba(79, 172, 254, 0.05); }
         .result-info { display: flex; flex-direction: column; gap: 4px; }
         .result-email { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: var(--text-main); }
         .result-badge { font-size: 10px; background: rgba(0, 230, 118, 0.15); color: var(--success); padding: 3px 8px; border-radius: 20px; font-weight: 700; display: inline-block; width: max-content; }
+        .btn-link { background: rgba(79, 172, 254, 0.1); color: var(--primary); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: 0.2s; border: 1px solid rgba(79, 172, 254, 0.2); cursor: pointer; }
         
-        .btn-sm { background: rgba(79, 172, 254, 0.1); color: var(--primary); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: 0.2s; border: 1px solid rgba(79, 172, 254, 0.2); cursor: pointer; }
-        .btn-sm:hover { background: var(--primary); color: #000; }
-
-        /* TEXTAREA HIDDEN & ACTIONS */
-        textarea.raw-txt { display: none; } /* Hanya untuk nyimpen data txt */
+        textarea.raw-txt { display: none; }
         .action-group { display: flex; gap: 10px; margin-top: 20px; }
 
         /* HEADER DASHBOARD */
         .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .dash-header h2 { margin: 0; font-size: 20px; }
-        .user-badge { font-size: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-        .user-badge:hover { background: rgba(255, 75, 75, 0.1); color: var(--danger); border-color: rgba(255, 75, 75, 0.3); }
-
+        .user-badge { font-size: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+        
         /* ADMIN PANEL */
         .admin-panel { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); }
-        .admin-title { font-size: 14px; color: #ffca28; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .flex-input { display: flex; gap: 10px; }
+        .admin-title { font-size: 14px; color: var(--warning); font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .flex-input { display: flex; gap: 10px; margin-bottom: 15px;}
     </style>
 </head>
 <body>
@@ -125,14 +96,8 @@
 <div class="container" id="auth-box">
     <div class="glass-box">
         <h1 class="title">AM TOOLS PREMIUM</h1>
-        <div class="input-group">
-            <label>Username</label>
-            <input type="text" id="username" class="input-control" placeholder="Masukkan username">
-        </div>
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="password" class="input-control" placeholder="••••••••">
-        </div>
+        <div class="input-group"><label>Username</label><input type="text" id="username" class="input-control" placeholder="Masukkan username"></div>
+        <div class="input-group"><label>Password</label><input type="password" id="password" class="input-control" placeholder="••••••••"></div>
         <button class="btn btn-primary" onclick="auth('login')" id="btn-login">Masuk Dashboard</button>
         <button class="btn btn-outline" onclick="auth('register')">Buat Akun Baru</button>
         <div id="auth-msg" style="text-align:center; margin-top:15px; font-size:13px; font-weight:600;"></div>
@@ -145,130 +110,95 @@
         
         <div class="dash-header">
             <h2 class="title" style="margin:0;">Dashboard</h2>
-            <div class="user-badge" onclick="logout()" title="Klik untuk Logout">
-                <span id="role-text">ADMIN</span>
-            </div>
+            <div class="user-badge" onclick="logout()" title="Logout"><span id="role-text">ADMIN</span></div>
         </div>
 
-        <!-- LOCKED VIEW (Untuk User Biasa) -->
         <div id="locked-view" class="hidden" style="text-align: center; padding: 30px 0;">
             <div style="font-size: 40px; margin-bottom: 15px;">🔒</div>
             <h3 style="margin:0 0 10px 0; color:var(--danger);">Akses Dibatasi</h3>
             <p style="color:var(--text-muted); font-size: 14px; margin-bottom: 25px;">Akun Anda belum memiliki lisensi Premium untuk menggunakan generator ini.</p>
-            <button class="btn btn-primary" onclick="contactAdmin()">Upgrade ke Premium</button>
+            <button class="btn btn-primary" onclick="contactAdmin()">Upgrade via Admin</button>
         </div>
 
-        <!-- TOOL VIEW (Premium / Admin) -->
         <div id="tool-view" class="hidden">
             
             <div class="notice-box">
-                <b>💡 Info:</b> Jika Tools Bulk sedang tidak berfungsi atau mengalami delay, silahkan gunakan mode <b>Verifikasi Manual</b> ya.
+                <b>💡 Info:</b> Jika Tools Bulk auto-verif error/limit, silakan gunakan mode <b>Verifikasi Manual</b>. Jika bingung memfilter link, gunakan tab <b>Alat Ekstrak</b> ya.
             </div>
 
             <!-- TABS -->
             <div class="tabs">
-                <div class="tab-btn active" id="tab-bulk" onclick="switchTab('bulk')">Auto Bulk Gen</div>
-                <div class="tab-btn" id="tab-manual" onclick="switchTab('manual')">Verifikasi Manual</div>
+                <div class="tab-btn active" id="tab-bulk" onclick="switchTab('bulk')">Auto Bulk</div>
+                <div class="tab-btn" id="tab-manual" onclick="switchTab('manual')">Verif Manual</div>
+                <div class="tab-btn" id="tab-tools" onclick="switchTab('tools')">Alat Ekstrak</div>
             </div>
 
             <!-- TAB 1: BULK GENERATOR -->
             <div id="section-bulk">
-                <div class="input-group">
-                    <label>Jumlah Generate (Max 50)</label>
-                    <input type="number" id="amount" class="input-control" min="1" max="50" value="1">
-                </div>
+                <div class="input-group"><label>Jumlah Generate (Max 50)</label><input type="number" id="amount" class="input-control" min="1" max="50" value="1"></div>
                 <button class="btn btn-primary" id="btn-gen" onclick="startGenerate()">⚡ Mulai Generate Auto</button>
-
-                <!-- Modern Progress Area -->
-                <div id="progress-area" class="progress-container hidden">
-                    <div class="progress-text" id="progress-status">Menyiapkan sistem...</div>
-                    <div class="progress-track">
-                        <div class="progress-fill" id="progress-bar"></div>
-                    </div>
-                </div>
-
-                <!-- Result Cards Area -->
-                <div id="results-container" class="hidden">
-                    <div class="results-grid" id="result-cards">
-                        <!-- Hasil kartu akan muncul di sini via JS -->
-                    </div>
-                    
-                    <textarea id="result-raw" class="raw-txt"></textarea>
-                    
-                    <div class="action-group">
-                        <button class="btn btn-outline" onclick="downloadTxt()">💾 Download Semua (TXT)</button>
-                        <button class="btn btn-outline" onclick="copyResult()">📋 Copy (TXT)</button>
-                    </div>
-                </div>
+                <div id="progress-area" class="progress-container hidden"><div class="progress-text" id="progress-status">Menyiapkan sistem...</div><div class="progress-track"><div class="progress-fill" id="progress-bar"></div></div></div>
+                <div id="results-container" class="hidden"><div class="results-grid" id="result-cards"></div><textarea id="result-raw" class="raw-txt"></textarea><div class="action-group"><button class="btn btn-outline" onclick="downloadTxt()">💾 Download (TXT)</button><button class="btn btn-outline" onclick="copyResult()">📋 Copy (TXT)</button></div></div>
             </div>
 
             <!-- TAB 2: MANUAL VERIFICATION -->
             <div id="section-manual" class="hidden">
-                <div class="input-group">
-                    <label>Langkah 1: Masukkan Email (Belum Premium)</label>
-                    <input type="email" id="manual-email" class="input-control" placeholder="contoh@gmail.com">
-                </div>
+                <div class="input-group"><label>Langkah 1: Masukkan Email (Belum Premium)</label><input type="email" id="manual-email" class="input-control" placeholder="contoh@gmail.com"></div>
                 <button class="btn btn-primary" id="btn-send-link" onclick="sendMagicLink()" style="margin-bottom: 25px;">Kirim Magic Link</button>
+                <div class="input-group"><label>Langkah 2: Tempel Magic Link yang Valid</label><input type="text" id="manual-link" class="input-control" placeholder="https://alight-creative.firebaseapp.com/..."></div>
+                <button class="btn btn-primary" id="btn-verif-link" onclick="verifyPremium()">✅ Verifikasi Premium</button>
+                <div id="manual-msg" style="margin-top: 15px; font-size: 13px; font-weight: 600; text-align: center;"></div>
+            </div>
+
+            <!-- TAB 3: SYNTAX TOOLS (Ekstrak Link) -->
+            <div id="section-tools" class="hidden">
+                <!-- Video Tutorial Player -->
+                <div id="tutorial-container" class="hidden">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; display:block; text-transform: uppercase;">📺 Video Tutorial</label>
+                    <div class="video-wrapper"><iframe id="tutorial-frame" src="" frameborder="0" allowfullscreen></iframe></div>
+                </div>
 
                 <div class="input-group">
-                    <label>Langkah 2: Tempel Magic Link dari Inbox</label>
-                    <input type="text" id="manual-link" class="input-control" placeholder="https://alight-creative.firebaseapp.com/...">
+                    <label>Teks Mentah dari Email (Bisa Tempel Semua)</label>
+                    <textarea id="raw-email-text" class="input-control" placeholder="Tempel seluruh pesan / HTML yang kamu dapat dari email ke sini..."></textarea>
                 </div>
-                <button class="btn btn-primary" id="btn-verif-link" onclick="verifyPremium()">✅ Verifikasi Premium</button>
+                <button class="btn btn-primary" onclick="extractSyntax()">🔍 Ekstrak Link Bersih</button>
                 
-                <div id="manual-msg" style="margin-top: 15px; font-size: 13px; font-weight: 600; text-align: center;"></div>
+                <div id="syntax-result-box" class="hidden" style="margin-top: 20px; background: rgba(0,242,254,0.1); border: 1px solid rgba(0,242,254,0.3); padding: 15px; border-radius: 12px;">
+                    <label style="color:var(--accent); font-size:12px; text-transform:uppercase; font-weight:700;">✅ Hasil Ekstrak (Valid Magic Link)</label>
+                    <input type="text" id="clean-link-result" class="input-control" style="margin-top: 10px; margin-bottom: 10px; font-family: monospace; font-size:11px;" readonly>
+                    <div class="action-group" style="margin-top:0;">
+                        <button class="btn btn-primary btn-sm" onclick="copyCleanLink()">📋 Salin Link</button>
+                        <button class="btn btn-outline btn-sm" style="margin-top:0;" onclick="useLinkForVerif()">▶️ Pakai untuk Verif Manual</button>
+                    </div>
+                </div>
             </div>
 
         </div>
 
-        <!-- ADMIN PANEL (Tersembunyi buat user) -->
+        <!-- ADMIN PANEL -->
         <div id="admin-view" class="admin-panel hidden">
-            <div class="admin-title">Panel Admin (Keamanan & WA)</div>
-            
-            <div class="input-group">
-                <label>Nomor WA Admin</label>
-                <div class="flex-input">
-                    <input type="number" id="wa-number" class="input-control">
-                    <button class="btn btn-outline" style="width:auto; margin:0;" onclick="adminAction('setWa')">Save</button>
-                </div>
-            </div>
-            
-            <div class="input-group">
-                <label>Upgrade Username</label>
-                <div class="flex-input">
-                    <input type="text" id="target-user" class="input-control" placeholder="Username">
-                    <button class="btn btn-outline" style="width:auto; margin:0;" onclick="adminAction('upgrade')">Upgrade</button>
-                </div>
-            </div>
-            
-            <div class="input-group" style="margin-bottom:0;">
-                <label style="color: var(--danger);">Reset Device (Buka Blokir HP)</label>
-                <div class="flex-input">
-                    <input type="text" id="reset-user" class="input-control" placeholder="Username">
-                    <button class="btn btn-primary" style="width:auto; margin:0; background:var(--danger); box-shadow:none;" onclick="adminAction('resetDevice')">Reset</button>
-                </div>
-            </div>
+            <div class="admin-title">Panel Admin (Keamanan & Setelan)</div>
+            <div class="flex-input"><input type="number" id="wa-number" class="input-control" placeholder="No WA Admin"><button class="btn btn-outline" style="width:auto; margin:0;" onclick="adminAction('setWa')">Save</button></div>
+            <div class="flex-input"><input type="text" id="video-link" class="input-control" placeholder="Link Embed YouTube (Opsional)"><button class="btn btn-outline" style="width:auto; margin:0;" onclick="adminAction('setVideo')">Save</button></div>
+            <div class="flex-input"><input type="text" id="target-user" class="input-control" placeholder="Upgrade Username"><button class="btn btn-outline" style="width:auto; margin:0;" onclick="adminAction('upgrade')">Upgrade</button></div>
+            <div class="flex-input" style="margin-bottom:0;"><input type="text" id="reset-user" class="input-control" placeholder="Reset Device User"><button class="btn btn-primary" style="width:auto; margin:0; background:var(--danger); box-shadow:none;" onclick="adminAction('resetDevice')">Reset</button></div>
         </div>
 
     </div>
 </div>
 
 <script>
-    let currentRole = null;
-    let currentUser = null;
+    let currentRole = null; let currentUser = null;
     let waAdmin = "628123456789";
     let deviceFingerprint = null;
 
-    // INIT FINGERPRINT JS
     window.onload = function() {
         if (typeof FingerprintJS !== 'undefined') {
-            FingerprintJS.load()
-                .then(fp => fp.get())
-                .then(result => { deviceFingerprint = result.visitorId; });
+            FingerprintJS.load().then(fp => fp.get()).then(result => { deviceFingerprint = result.visitorId; });
         }
     };
 
-    // Auto-init DB
     fetch('/api/db', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'init' }) });
 
     async function reqApi(action, data = {}) {
@@ -276,109 +206,70 @@
         return await res.json();
     }
 
-    function showMsg(id, text, isError = false) {
-        const el = document.getElementById(id);
-        el.innerText = text;
-        el.style.color = isError ? 'var(--danger)' : 'var(--success)';
-    }
+    function showMsg(id, text, isError = false) { const el = document.getElementById(id); el.innerText = text; el.style.color = isError ? 'var(--danger)' : 'var(--success)'; }
 
-    // AUTH SYSTEM
     async function auth(action) {
-        const u = document.getElementById('username').value.trim();
-        const p = document.getElementById('password').value.trim();
-        if (!u || !p) return showMsg('auth-msg', 'Harap isi username dan password!', true);
-        
-        document.getElementById('btn-login').disabled = true;
-        document.getElementById('btn-login').innerText = 'Memvalidasi Keamanan...';
+        const u = document.getElementById('username').value.trim(); const p = document.getElementById('password').value.trim();
+        if (!u || !p) return showMsg('auth-msg', 'Isi username & password!', true);
+        document.getElementById('btn-login').disabled = true; document.getElementById('btn-login').innerText = 'Loading...';
         
         const res = await reqApi(action, { username: u, password: p, fingerprint: deviceFingerprint });
-        
-        document.getElementById('btn-login').disabled = false;
-        document.getElementById('btn-login').innerText = 'Masuk Dashboard';
+        document.getElementById('btn-login').disabled = false; document.getElementById('btn-login').innerText = 'Masuk Dashboard';
 
-        if (res.error) {
-            showMsg('auth-msg', res.error, true);
-        } else {
-            currentUser = u; currentRole = res.role;
-            loadDashboard();
-        }
+        if (res.error) showMsg('auth-msg', res.error, true);
+        else { currentUser = u; currentRole = res.role; loadDashboard(); }
     }
 
     async function loadDashboard() {
-        document.getElementById('auth-box').classList.add('hidden');
-        document.getElementById('dashboard-box').classList.remove('hidden');
+        document.getElementById('auth-box').classList.add('hidden'); document.getElementById('dashboard-box').classList.remove('hidden');
         document.getElementById('role-text').innerText = currentRole.toUpperCase();
         
-        const resWa = await reqApi('getWa');
-        if(resWa.wa) waAdmin = resWa.wa;
+        // Fetch WA & Video Settings
+        const settings = await reqApi('getSettings');
+        if(settings.wa) waAdmin = settings.wa;
+        if(settings.video) {
+            document.getElementById('tutorial-container').classList.remove('hidden');
+            document.getElementById('tutorial-frame').src = settings.video;
+        }
 
         if (currentRole === 'user') {
-            document.getElementById('locked-view').classList.remove('hidden');
-            document.getElementById('tool-view').classList.add('hidden');
+            document.getElementById('locked-view').classList.remove('hidden'); document.getElementById('tool-view').classList.add('hidden');
         } else {
-            document.getElementById('locked-view').classList.add('hidden');
-            document.getElementById('tool-view').classList.remove('hidden');
+            document.getElementById('locked-view').classList.add('hidden'); document.getElementById('tool-view').classList.remove('hidden');
         }
 
         if (currentRole === 'admin') {
             document.getElementById('admin-view').classList.remove('hidden');
             document.getElementById('wa-number').value = waAdmin;
-        } else {
-            document.getElementById('admin-view').classList.add('hidden');
+            if(settings.video) document.getElementById('video-link').value = settings.video;
         }
     }
 
-    function logout() {
-        currentUser = null; currentRole = null;
-        document.getElementById('auth-box').classList.remove('hidden');
-        document.getElementById('dashboard-box').classList.add('hidden');
-        document.getElementById('password').value = '';
-        showMsg('auth-msg', '');
-    }
+    function logout() { location.reload(); }
+    function contactAdmin() { window.open(`https://wa.me/${waAdmin}?text=Halo%20Admin,%20saya%20mau%20upgrade%20akun%20Gen%20AM.%20Username:%20${currentUser}`, '_blank'); }
 
-    function contactAdmin() {
-        window.open(`https://wa.me/${waAdmin}?text=Halo%20Admin,%20saya%20ingin%20upgrade%20akun%20Gen%20AM%20Tools.%20Username:%20${currentUser}`, '_blank');
-    }
-
-    // TABS SWITCHER
     function switchTab(tabName) {
-        document.getElementById('tab-bulk').classList.remove('active');
-        document.getElementById('tab-manual').classList.remove('active');
-        document.getElementById('section-bulk').classList.add('hidden');
-        document.getElementById('section-manual').classList.add('hidden');
-        
+        ['bulk', 'manual', 'tools'].forEach(t => {
+            document.getElementById(`tab-${t}`).classList.remove('active');
+            document.getElementById(`section-${t}`).classList.add('hidden');
+        });
         document.getElementById(`tab-${tabName}`).classList.add('active');
         document.getElementById(`section-${tabName}`).classList.remove('hidden');
     }
+    
+    function cleanText(txt) { return txt ? txt.replace(/jerexd/gi, 'Sistem').replace(/JEREXD/g, 'ORDER') : ''; }
 
-    // SENSOR NAMA
-    function cleanText(txt) {
-        if (!txt) return '';
-        return txt.replace(/jerexd/gi, 'Sistem').replace(/JEREXD/g, 'ORDER');
-    }
-
-    // --- FITUR 1: AUTO BULK GENERATOR ---
+    // --- BULK AUTO ---
     function startGenerate() {
         let amt = parseInt(document.getElementById('amount').value);
         if (isNaN(amt) || amt < 1 || amt > 50) return alert('Jumlah maks 50');
         
-        // Reset UI
-        document.getElementById('result-cards').innerHTML = '';
-        document.getElementById('result-raw').value = '';
+        document.getElementById('result-cards').innerHTML = ''; document.getElementById('result-raw').value = '';
         document.getElementById('results-container').classList.add('hidden');
+        const btnGen = document.getElementById('btn-gen'); btnGen.disabled = true; btnGen.innerText = '⏳ Sedang Memproses...';
         
-        const btnGen = document.getElementById('btn-gen');
-        btnGen.disabled = true;
-        btnGen.innerText = '⏳ Sedang Memproses...';
-        
-        const progArea = document.getElementById('progress-area');
-        const progBar = document.getElementById('progress-bar');
-        const progStatus = document.getElementById('progress-status');
-        
-        progArea.classList.remove('hidden');
-        progStatus.classList.add('active-status');
-        progStatus.innerText = 'Menghubungkan ke server...';
-        progBar.style.width = '5%';
+        const progArea = document.getElementById('progress-area'); const progBar = document.getElementById('progress-bar'); const progStatus = document.getElementById('progress-status');
+        progArea.classList.remove('hidden'); progStatus.classList.add('active-status'); progStatus.innerText = 'Menghubungkan ke server...'; progBar.style.width = '5%';
 
         const source = new EventSource(`/api/gen?amount=${amt}`);
         let successCount = 0;
@@ -386,151 +277,111 @@
         source.onmessage = function(event) {
             try {
                 const data = JSON.parse(event.data);
-                
                 if (data.status === 'starting') {
-                    progStatus.innerText = cleanText(data.message);
-                    progBar.style.width = '15%';
+                    progStatus.innerText = cleanText(data.message); progBar.style.width = '15%';
                 } else if (data.type === 'success') {
                     successCount++;
-                    // Kalkulasi progress bar
-                    let percent = 15 + ((successCount / amt) * 85);
-                    progBar.style.width = `${percent}%`;
+                    progBar.style.width = `${15 + ((successCount / amt) * 85)}%`;
                     progStatus.innerText = `Memproses akun ke-${successCount} dari ${amt}...`;
-                    
-                    const rawAccount = data.account;
-                    const emailOnly = rawAccount.split('|')[0];
+                    const rawAccount = data.account; const emailOnly = rawAccount.split('|')[0];
                     const magicLink = `https://generator.email/${emailOnly}`;
                     
-                    // Nampilin Area Hasil
                     document.getElementById('results-container').classList.remove('hidden');
-                    
-                    // Simpan ke Raw TXT
                     document.getElementById('result-raw').value += `${rawAccount} - Link: ${magicLink}\n`;
-                    
-                    // Tambah Element Kartu 1 per 1 (Modern Look)
-                    const card = document.createElement('div');
-                    card.className = 'result-card';
-                    card.innerHTML = `
-                        <div class="result-info">
-                            <span class="result-email">${emailOnly}</span>
-                            <span class="result-badge">Premium Aktif</span>
-                        </div>
-                        <a href="${magicLink}" target="_blank" class="btn-sm">Buka Inbox</a>
-                    `;
-                    document.getElementById('result-cards').appendChild(card);
-
+                    document.getElementById('result-cards').innerHTML += `<div class="result-card"><div class="result-info"><span class="result-email">${emailOnly}</span><span class="result-badge">Premium Aktif</span></div><a href="${magicLink}" target="_blank" class="btn-link">Buka Inbox</a></div>`;
                 } else if (data.type === 'done') {
-                    progStatus.classList.remove('active-status');
-                    progStatus.style.color = 'var(--success)';
-                    progStatus.innerText = `Selesai! Berhasil membuat ${data.success} akun.`;
-                    progBar.style.width = '100%';
-                    closeStream(source);
+                    progStatus.classList.remove('active-status'); progStatus.style.color = 'var(--success)';
+                    progStatus.innerText = `Selesai! Berhasil membuat ${data.success} akun.`; progBar.style.width = '100%';
+                    closeStream(source, btnGen);
                 }
-            } catch (e) {
-                // Ignore keep-alive
-            }
+            } catch (e) { }
         };
-
-        source.onerror = function() {
-            progStatus.classList.remove('active-status');
-            progStatus.style.color = 'var(--danger)';
-            progStatus.innerText = 'Koneksi terputus.';
-            closeStream(source);
-        };
+        source.onerror = function() { progStatus.classList.remove('active-status'); progStatus.style.color = 'var(--danger)'; progStatus.innerText = 'Koneksi terputus.'; closeStream(source, btnGen); };
     }
+    function closeStream(source, btn) { source.close(); btn.disabled = false; btn.innerText = '⚡ Mulai Generate Auto'; }
+    function downloadTxt() { const txt = document.getElementById('result-raw').value; if (!txt) return; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain' })); a.download = `AM_Premium_${Date.now()}.txt`; a.click(); }
+    function copyResult() { const txt = document.getElementById('result-raw').value; if (!txt) return; navigator.clipboard.writeText(txt); alert('Berhasil disalin!'); }
 
-    function closeStream(source) {
-        source.close();
-        const btnGen = document.getElementById('btn-gen');
-        btnGen.disabled = false;
-        btnGen.innerText = '⚡ Mulai Generate Auto';
-    }
-
-    function downloadTxt() {
-        const txt = document.getElementById('result-raw').value;
-        if (!txt) return;
-        const blob = new Blob([txt], { type: 'text/plain' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-        a.download = `AM_Premium_${Date.now()}.txt`; a.click();
-    }
-    
-    function copyResult() {
-        const txt = document.getElementById('result-raw').value;
-        if (!txt) return;
-        navigator.clipboard.writeText(txt);
-        alert('Berhasil disalin ke clipboard!');
-    }
-
-    // --- FITUR 2: MANUAL VERIFICATION ---
+    // --- MANUAL VERIF ---
     async function sendMagicLink() {
         const email = document.getElementById('manual-email').value.trim();
         if(!email) return showMsg('manual-msg', 'Isi email dulu bos!', true);
-        
-        const btn = document.getElementById('btn-send-link');
-        btn.disabled = true; btn.innerText = 'Mengirim...';
-        showMsg('manual-msg', '');
+        const btn = document.getElementById('btn-send-link'); btn.disabled = true; btn.innerText = 'Mengirim...'; showMsg('manual-msg', '');
 
         try {
-            const res = await fetch('/api/manual', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'send', email: email })
-            });
+            const res = await fetch('/api/manual', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'send', email: email }) });
             const data = await res.json();
-            
-            if(data.status) {
-                showMsg('manual-msg', cleanText(data.message));
-                // Auto copy domain to clipboard helper if they use generator.email
-                if(email.includes('@')) {
-                    window.open(`https://generator.email/${email}`, '_blank');
-                }
-            } else {
-                showMsg('manual-msg', cleanText(data.message || 'Gagal mengirim link.'), true);
-            }
+            if(data.status) { showMsg('manual-msg', cleanText(data.message)); if(email.includes('@')) window.open(`https://generator.email/${email}`, '_blank'); } 
+            else showMsg('manual-msg', cleanText(data.message || 'Gagal mengirim link.'), true);
         } catch (e) { showMsg('manual-msg', 'Error koneksi ke server', true); }
-        
         btn.disabled = false; btn.innerText = 'Kirim Magic Link';
     }
 
     async function verifyPremium() {
-        const email = document.getElementById('manual-email').value.trim();
-        const link = document.getElementById('manual-link').value.trim();
+        const email = document.getElementById('manual-email').value.trim(); const link = document.getElementById('manual-link').value.trim();
         if(!email || !link) return showMsg('manual-msg', 'Isi Email & Magic Link terlebih dahulu!', true);
-        
-        const btn = document.getElementById('btn-verif-link');
-        btn.disabled = true; btn.innerText = 'Memverifikasi...';
-        showMsg('manual-msg', 'Sedang menembak server Alight Motion...');
+        const btn = document.getElementById('btn-verif-link'); btn.disabled = true; btn.innerText = 'Memverifikasi...'; showMsg('manual-msg', 'Sedang menembak server AM...');
 
         try {
-            const res = await fetch('/api/manual', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'verif', email: email, link: link })
-            });
+            const res = await fetch('/api/manual', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'verif', email: email, link: link }) });
             const data = await res.json();
-            
-            if(data.status) {
-                showMsg('manual-msg', cleanText(data.message));
-                document.getElementById('manual-link').value = ''; // Reset input
-            } else {
-                showMsg('manual-msg', cleanText(data.message || 'Gagal verifikasi link.'), true);
-            }
-        } catch (e) { showMsg('manual-msg', 'Error koneksi ke server', true); }
-        
+            if(data.status) { showMsg('manual-msg', cleanText(data.message)); document.getElementById('manual-link').value = ''; } 
+            else showMsg('manual-msg', cleanText(data.message || 'Gagal verifikasi link.'), true);
+        } catch (e) { showMsg('manual-msg', 'Error koneksi', true); }
         btn.disabled = false; btn.innerText = '✅ Verifikasi Premium';
+    }
+
+    // --- SYNTAX EXTRACTOR (Baru) ---
+    function extractSyntax() {
+        let rawText = document.getElementById('raw-email-text').value;
+        if (!rawText) return alert('Tempel teks email dulu!');
+
+        // 1. Bersihkan jeda baris Quoted-Printable (tanda = di akhir baris) dan ganti =3D jadi =
+        let cleanText = rawText.replace(/=\r?\n/g, '').replace(/=3D/g, '=');
+
+        // 2. Gunakan Regex untuk menangkap link otentikasi firebase
+        const regex = /(https:\/\/alight-creative\.firebaseapp\.com\/__[^\s'"><]+)/i;
+        const match = cleanText.match(regex);
+
+        if (match && match[1]) {
+            const finalLink = match[1];
+            document.getElementById('clean-link-result').value = finalLink;
+            document.getElementById('syntax-result-box').classList.remove('hidden');
+        } else {
+            alert('Tidak dapat menemukan Magic Link yang valid pada teks tersebut. Pastikan kamu menyalin seluruh isi email!');
+            document.getElementById('syntax-result-box').classList.add('hidden');
+        }
+    }
+
+    function copyCleanLink() {
+        const link = document.getElementById('clean-link-result').value;
+        if(link) { navigator.clipboard.writeText(link); alert('Link berhasil disalin!'); }
+    }
+
+    function useLinkForVerif() {
+        const link = document.getElementById('clean-link-result').value;
+        if(link) {
+            // Pindah ke tab manual dan otomatis isi kolom link
+            document.getElementById('manual-link').value = link;
+            switchTab('manual');
+            
+            // Highlight kolomnya biar user notice
+            const linkInput = document.getElementById('manual-link');
+            linkInput.style.borderColor = 'var(--success)';
+            setTimeout(() => { linkInput.style.borderColor = 'var(--border)'; }, 2000);
+        }
     }
 
     // --- ADMIN ACTIONS ---
     async function adminAction(action) {
         const payload = { action, currentUser };
         if (action === 'setWa') payload.waNumber = document.getElementById('wa-number').value;
+        if (action === 'setVideo') payload.videoLink = document.getElementById('video-link').value;
         if (action === 'upgrade') payload.targetUser = document.getElementById('target-user').value;
         if (action === 'resetDevice') payload.targetUser = document.getElementById('reset-user').value;
         
         const res = await reqApi(action, payload);
-        if(res.success) {
-            alert('Sukses dieksekusi!');
-            document.getElementById('target-user').value = '';
-            document.getElementById('reset-user').value = '';
-        } else alert('Gagal: ' + res.error);
+        if(res.success) { alert('Sukses disimpan!'); } else alert('Gagal: ' + res.error);
     }
 </script>
 </body>
