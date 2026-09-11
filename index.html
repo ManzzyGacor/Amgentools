@@ -55,8 +55,14 @@
         .tab-btn { flex: 1; text-align: center; padding: 10px 5px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
         .tab-btn.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); }
 
-        /* NOTICES & VIDEO */
-        .notice-box { background: rgba(255, 171, 0, 0.1); border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 8px; font-size: 13px; color: var(--warning); margin-bottom: 20px; line-height: 1.5; }
+        /* NOTICES & ALERTS */
+        .notice-box { background: rgba(255, 171, 0, 0.1); border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 8px; font-size: 13px; color: var(--warning); margin-bottom: 12px; line-height: 1.5; }
+        
+        /* BOX PENGUMUMAN BARU (Merah/Danger) */
+        .alert-box { background: rgba(255, 75, 75, 0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 8px; font-size: 13px; color: #ffb4b4; margin-bottom: 25px; line-height: 1.6; }
+        .alert-title { font-weight: 700; color: var(--danger); margin-bottom: 8px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+
+        /* VIDEO */
         .video-wrapper { position: relative; padding-bottom: 56.25%; /* 16:9 */ height: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
@@ -122,8 +128,16 @@
 
         <div id="tool-view" class="hidden">
             
+            <!-- INFO LAMA (Kuning) -->
             <div class="notice-box">
                 <b>💡 Info:</b> Jika Tools Bulk auto-verif error/limit, silakan gunakan mode <b>Verifikasi Manual</b>. Jika bingung memfilter link, gunakan tab <b>Alat Ekstrak</b> ya.
+            </div>
+
+            <!-- PENGUMUMAN BARU (Merah Terang, Terpisah) -->
+            <div class="alert-box">
+                <div class="alert-title">📢 KEBIJAKAN LIMIT BARU</div>
+                Mulai sekarang, batas Generate AM Bulk adalah <b>Maksimal 50 Akun per Hari</b> untuk setiap user. Kebijakan ini diberlakukan karena banyaknya user yang membuat akun massal namun pada akhirnya tidak dipakai atau disimpan.<br><br>
+                <i>Penting:</i> Bagi yang memakai fitur Generate Bulk, <b>harap tonton Video Tutorial</b> yang tersedia (di tab Alat Ekstrak). Proses verifikasinya sedikit lebih ribet dibandingkan verifikasi manual via email @gmail.com pada umumnya.
             </div>
 
             <!-- TABS -->
@@ -135,7 +149,7 @@
 
             <!-- TAB 1: BULK GENERATOR -->
             <div id="section-bulk">
-                <div class="input-group"><label>Jumlah Generate (Max 50)</label><input type="number" id="amount" class="input-control" min="1" max="50" value="1"></div>
+                <div class="input-group"><label>Jumlah Generate (Max 50 / Hari)</label><input type="number" id="amount" class="input-control" min="1" max="50" value="1"></div>
                 <button class="btn btn-primary" id="btn-gen" onclick="startGenerate()">⚡ Mulai Generate Auto</button>
                 <div id="progress-area" class="progress-container hidden"><div class="progress-text" id="progress-status">Menyiapkan sistem...</div><div class="progress-track"><div class="progress-fill" id="progress-bar"></div></div></div>
                 <div id="results-container" class="hidden"><div class="results-grid" id="result-cards"></div><textarea id="result-raw" class="raw-txt"></textarea><div class="action-group"><button class="btn btn-outline" onclick="downloadTxt()">💾 Download (TXT)</button><button class="btn btn-outline" onclick="copyResult()">📋 Copy (TXT)</button></div></div>
@@ -224,7 +238,6 @@
         document.getElementById('auth-box').classList.add('hidden'); document.getElementById('dashboard-box').classList.remove('hidden');
         document.getElementById('role-text').innerText = currentRole.toUpperCase();
         
-        // Fetch WA & Video Settings
         const settings = await reqApi('getSettings');
         if(settings.wa) waAdmin = settings.wa;
         if(settings.video) {
@@ -259,10 +272,9 @@
     
     function cleanText(txt) { return txt ? txt.replace(/jerexd/gi, 'Sistem').replace(/JEREXD/g, 'ORDER') : ''; }
 
-    // --- BULK AUTO ---
     function startGenerate() {
         let amt = parseInt(document.getElementById('amount').value);
-        if (isNaN(amt) || amt < 1 || amt > 50) return alert('Jumlah maks 50');
+        if (isNaN(amt) || amt < 1 || amt > 50) return alert('Sesuai kebijakan baru, jumlah maksimal adalah 50 akun/hari.');
         
         document.getElementById('result-cards').innerHTML = ''; document.getElementById('result-raw').value = '';
         document.getElementById('results-container').classList.add('hidden');
@@ -302,7 +314,6 @@
     function downloadTxt() { const txt = document.getElementById('result-raw').value; if (!txt) return; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain' })); a.download = `AM_Premium_${Date.now()}.txt`; a.click(); }
     function copyResult() { const txt = document.getElementById('result-raw').value; if (!txt) return; navigator.clipboard.writeText(txt); alert('Berhasil disalin!'); }
 
-    // --- MANUAL VERIF ---
     async function sendMagicLink() {
         const email = document.getElementById('manual-email').value.trim();
         if(!email) return showMsg('manual-msg', 'Isi email dulu bos!', true);
@@ -331,15 +342,10 @@
         btn.disabled = false; btn.innerText = '✅ Verifikasi Premium';
     }
 
-    // --- SYNTAX EXTRACTOR (Baru) ---
     function extractSyntax() {
         let rawText = document.getElementById('raw-email-text').value;
         if (!rawText) return alert('Tempel teks email dulu!');
-
-        // 1. Bersihkan jeda baris Quoted-Printable (tanda = di akhir baris) dan ganti =3D jadi =
         let cleanText = rawText.replace(/=\r?\n/g, '').replace(/=3D/g, '=');
-
-        // 2. Gunakan Regex untuk menangkap link otentikasi firebase
         const regex = /(https:\/\/alight-creative\.firebaseapp\.com\/__[^\s'"><]+)/i;
         const match = cleanText.match(regex);
 
@@ -361,18 +367,14 @@
     function useLinkForVerif() {
         const link = document.getElementById('clean-link-result').value;
         if(link) {
-            // Pindah ke tab manual dan otomatis isi kolom link
             document.getElementById('manual-link').value = link;
             switchTab('manual');
-            
-            // Highlight kolomnya biar user notice
             const linkInput = document.getElementById('manual-link');
             linkInput.style.borderColor = 'var(--success)';
             setTimeout(() => { linkInput.style.borderColor = 'var(--border)'; }, 2000);
         }
     }
 
-    // --- ADMIN ACTIONS ---
     async function adminAction(action) {
         const payload = { action, currentUser };
         if (action === 'setWa') payload.waNumber = document.getElementById('wa-number').value;
