@@ -286,27 +286,49 @@
         const source = new EventSource(`/api/gen?amount=${amt}`);
         let successCount = 0;
 
-        source.onmessage = function(event) {
+source.onmessage = function(event) {
             try {
                 const data = JSON.parse(event.data);
+                
                 if (data.status === 'starting') {
-                    progStatus.innerText = cleanText(data.message); progBar.style.width = '15%';
+                    progStatus.innerText = cleanText(data.message); 
+                    progBar.style.width = '15%';
                 } else if (data.type === 'success') {
                     successCount++;
                     progBar.style.width = `${15 + ((successCount / amt) * 85)}%`;
                     progStatus.innerText = `Memproses akun ke-${successCount} dari ${amt}...`;
-                    const rawAccount = data.account; const emailOnly = rawAccount.split('|')[0];
-                    const magicLink = `https://generator.email/${emailOnly}`;
+                    
+                    const rawAccount = data.account; // format: email|PREMIUM
+                    const emailOnly = rawAccount.split('|')[0];
+                    
+                    // AMBIL LOGIN URL LANGSUNG DARI JSON API (Fallback ke generator.email jika kosong)
+                    const inboxLink = data.login_url || `https://generator.email/${emailOnly}`;
                     
                     document.getElementById('results-container').classList.remove('hidden');
-                    document.getElementById('result-raw').value += `${rawAccount} - Link: ${magicLink}\n`;
-                    document.getElementById('result-cards').innerHTML += `<div class="result-card"><div class="result-info"><span class="result-email">${emailOnly}</span><span class="result-badge">Premium Aktif</span></div><a href="${magicLink}" target="_blank" class="btn-link">Buka Inbox</a></div>`;
+                    
+                    // Simpan ke teks raw untuk di-download/copy (lengkap dengan link inbox-nya)
+                    document.getElementById('result-raw').value += `${rawAccount} - Link: ${inboxLink}\n`;
+                    
+                    // Tampilkan kartu hasil 1 per 1 dengan tombol yang mengarah ke login_url asli
+                    document.getElementById('result-cards').innerHTML += `
+                        <div class="result-card">
+                            <div class="result-info">
+                                <span class="result-email">${emailOnly}</span>
+                                <span class="result-badge">Premium Aktif</span>
+                            </div>
+                            <a href="${inboxLink}" target="_blank" class="btn-link">Buka Inbox</a>
+                        </div>
+                    `;
                 } else if (data.type === 'done') {
-                    progStatus.classList.remove('active-status'); progStatus.style.color = 'var(--success)';
-                    progStatus.innerText = `Selesai! Berhasil membuat ${data.success} akun.`; progBar.style.width = '100%';
+                    progStatus.classList.remove('active-status'); 
+                    progStatus.style.color = 'var(--success)';
+                    progStatus.innerText = `Selesai! Berhasil membuat ${data.success} akun.`; 
+                    progBar.style.width = '100%';
                     closeStream(source, btnGen);
                 }
-            } catch (e) { }
+            } catch (e) { 
+                // Abaikan pesan keep-alive
+            }
         };
         source.onerror = function() { progStatus.classList.remove('active-status'); progStatus.style.color = 'var(--danger)'; progStatus.innerText = 'Koneksi terputus.'; closeStream(source, btnGen); };
     }
